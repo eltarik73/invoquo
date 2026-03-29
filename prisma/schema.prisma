@@ -86,6 +86,7 @@ model Tenant {
   headerLine2      String?
   footerLine1      String?
   footerLine2      String?
+  footerLine3      String?
 
   // Settings - Banque
   iban              String?
@@ -125,6 +126,7 @@ model Tenant {
   receivedInvoices ReceivedInvoice[]
   quotes           Quote[]
   exports          Export[]
+  iscaKey          IscaKey?
 
   @@index([siren])
 }
@@ -317,4 +319,146 @@ model Export {
   createdAt   DateTime @default(now())
 
   @@index([tenantId, createdAt])
+}
+
+// === ISCA : Cles de signature par tenant ===
+
+model IscaKey {
+  id              String    @id @default(cuid())
+  tenantId        String    @unique
+  tenant          Tenant    @relation(fields: [tenantId], references: [id])
+  encryptedSecret String
+  iv              String
+  authTag         String
+  createdAt       DateTime  @default(now())
+  rotatedAt       DateTime?
+}
+
+// === ISCA : Commandes (table signee #1) ===
+
+model IscaCommande {
+  id               String   @id @default(cuid())
+  tenantId         String
+  siret            String
+  idInterne        Int
+  dateCreation     DateTime @default(now())
+  idUtilisateur    String
+  idCaisse         String   @default("WEB")
+  statut           String
+  montantTotalHT   Decimal  @db.Decimal(12, 6)
+  montantTotalTTC  Decimal  @db.Decimal(12, 6)
+  montantTVA       Decimal  @db.Decimal(12, 6)
+  typeOperation    String
+  referenceFacture String?
+  thehash          String
+  createdAt        DateTime @default(now())
+
+  articles  IscaArticle[]
+  paiements IscaPaiement[]
+
+  @@unique([siret, idInterne])
+  @@index([tenantId, siret, dateCreation])
+}
+
+// === ISCA : Articles (table signee #2) ===
+
+model IscaArticle {
+  id                   String   @id @default(cuid())
+  tenantId             String
+  siret                String
+  commandeId           String
+  commande             IscaCommande @relation(fields: [commandeId], references: [id])
+  idInterne            Int
+  dateCreation         DateTime @default(now())
+  idUtilisateur        String
+  nom                  String
+  quantite             Decimal  @db.Decimal(10, 6)
+  prixInitial          Decimal  @db.Decimal(12, 6)
+  tauxTva              Decimal  @db.Decimal(5, 2)
+  montantTvaDeductible Decimal  @db.Decimal(12, 6)
+  tauxReduction        Decimal  @db.Decimal(5, 2)  @default(0)
+  montantReduction     Decimal  @db.Decimal(12, 6) @default(0)
+  prixFinalHT          Decimal  @db.Decimal(12, 6)
+  prixFinal            Decimal  @db.Decimal(12, 6)
+  thehash              String
+  createdAt            DateTime @default(now())
+
+  @@unique([siret, idInterne])
+  @@index([tenantId, siret])
+  @@index([commandeId])
+}
+
+// === ISCA : Paiements (table signee #3) ===
+
+model IscaPaiement {
+  id             String   @id @default(cuid())
+  tenantId       String
+  siret          String
+  commandeId     String
+  commande       IscaCommande @relation(fields: [commandeId], references: [id])
+  idInterne      Int
+  idUtilisateur  String
+  idCaisse       String   @default("WEB")
+  typePaiement   String
+  datePaiement   DateTime @default(now())
+  montantPaye    Decimal  @db.Decimal(12, 6)
+  montantVerse   Decimal  @db.Decimal(12, 6)
+  thehash        String
+  createdAt      DateTime @default(now())
+
+  @@unique([siret, idInterne])
+  @@index([tenantId, siret])
+  @@index([commandeId])
+}
+
+// === ISCA : Clotures automatiques (table signee #4) ===
+
+model IscaFermeture {
+  id                      String   @id @default(cuid())
+  tenantId                String
+  siret                   String
+  idInterne               Int
+  type                    String
+  dateDebut               DateTime
+  dateFin                 DateTime
+  dateFermeture           DateTime @default(now())
+  totalVentes             Decimal  @db.Decimal(12, 6)
+  totalAnnulations        Decimal  @db.Decimal(12, 6)
+  totalRemboursements     Decimal  @db.Decimal(12, 6)
+  totalTVA                Decimal  @db.Decimal(12, 6)
+  totalHT                 Decimal  @db.Decimal(12, 6)
+  totalTTC                Decimal  @db.Decimal(12, 6)
+  nombreTransactions      Int
+  grandTotalVentes        Decimal  @db.Decimal(14, 6)
+  grandTotalTVA           Decimal  @db.Decimal(14, 6)
+  grandTotalTTC           Decimal  @db.Decimal(14, 6)
+  grandNombreTransactions Int
+  thehash                 String
+  createdAt               DateTime @default(now())
+
+  @@unique([siret, idInterne])
+  @@unique([siret, type, dateDebut])
+  @@index([tenantId, siret, type])
+}
+
+// === ISCA : Journal des Evenements Techniques — JET (table signee #5) ===
+
+model IscaTracabilite {
+  id                String   @id @default(cuid())
+  tenantId          String
+  siret             String
+  idInterne         Int
+  dateEvenement     DateTime @default(now())
+  typeEvenement     String
+  idUtilisateur     String
+  description       String
+  idObjetConcerne   String?
+  typeObjetConcerne String?
+  detailsJson       String?
+  thehash           String
+  createdAt         DateTime @default(now())
+
+  @@unique([siret, idInterne])
+  @@index([tenantId, siret, dateEvenement])
+  @@index([typeEvenement])
 }

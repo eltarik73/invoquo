@@ -108,6 +108,11 @@ export async function POST(request: NextRequest) {
           role: user.role,
           tenantId: user.tenantId,
         },
+        tenant: {
+          id: user.tenantId,
+          siret: company.siret,
+          companyName: company.companyName,
+        },
       },
       201
     );

@@ -20,7 +20,12 @@ export async function POST(request: NextRequest) {
 
     const { email, password } = parsed.data;
 
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.user.findUnique({
+      where: { email },
+      include: {
+        tenant: { select: { id: true, siret: true, companyName: true } },
+      },
+    });
     if (!user) {
       return apiError("Email ou mot de passe incorrect", 401);
     }
@@ -57,6 +62,11 @@ export async function POST(request: NextRequest) {
         role: user.role,
         tenantId: user.tenantId,
       },
+      tenant: user.tenant ? {
+        id: user.tenant.id,
+        siret: user.tenant.siret,
+        companyName: user.tenant.companyName,
+      } : null,
     });
   } catch (error) {
     console.error("Login error:", error);
