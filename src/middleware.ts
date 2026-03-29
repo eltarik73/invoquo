@@ -18,6 +18,12 @@ export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const token = req.cookies.get(COOKIE_NAME)?.value;
 
+  // Embed routes — auth by embedToken in query param, not cookie
+  if (pathname.startsWith("/embed/")) return NextResponse.next();
+
+  // External API routes — auth by apiKey header, not cookie
+  if (pathname.startsWith("/api/v1/")) return NextResponse.next();
+
   const isProtectedAPI =
     pathname.startsWith("/api/") &&
     !PUBLIC_ROUTES.some((r) => pathname.startsWith(r));
