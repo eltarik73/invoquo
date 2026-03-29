@@ -104,14 +104,12 @@ export async function getNextIdInterne(
     .readInt32BE(0);
 
   await tx.$queryRawUnsafe(
-    `SELECT pg_advisory_xact_lock($1)`,
-    lockId,
+    `SELECT pg_advisory_xact_lock(${lockId})`,
   );
 
   const maxResult: Array<{ max_id: number | null }> =
     await tx.$queryRawUnsafe(
-      `SELECT COALESCE(MAX("idInterne"), 0) as max_id FROM "${tableName}" WHERE siret = $1`,
-      siret,
+      `SELECT COALESCE(MAX("idInterne"), 0) as max_id FROM "${tableName}" WHERE siret = '${siret.replace(/'/g, "''")}'`,
     );
 
   return (maxResult[0]?.max_id || 0) + 1;
