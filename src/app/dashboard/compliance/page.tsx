@@ -68,7 +68,7 @@ export default function CompliancePage() {
             </p>
           </div>
           {!paConnected && (
-            <Link href="/settings">
+            <Link href="/dashboard/settings">
               <Button size="sm">Connecter ma PA</Button>
             </Link>
           )}

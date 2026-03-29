@@ -110,7 +110,7 @@ export default function ReceivedPage() {
                     <p className="text-muted-foreground">
                       Aucune facture recue
                     </p>
-                    <Link href="/settings">
+                    <Link href="/dashboard/settings">
                       <Button variant="outline" size="sm" className="mt-3">
                         Verifier ma connexion PA
                       </Button>

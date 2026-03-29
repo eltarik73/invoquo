@@ -88,7 +88,7 @@ export default function InvoicesPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fade-in-up">
         <h1 className="text-2xl font-bold">Factures</h1>
-        <Link href="/invoices/new">
+        <Link href="/dashboard/invoices/new">
           <Button className="w-full sm:w-auto">
             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -150,7 +150,7 @@ export default function InvoicesPage() {
                 data.data.map((inv) => (
                   <TableRow key={inv.id} className="group">
                     <TableCell>
-                      <Link href={`/invoices/${inv.id}`} className="font-mono text-sm font-medium text-primary hover:underline">
+                      <Link href={`/dashboard/invoices/${inv.id}`} className="font-mono text-sm font-medium text-primary hover:underline">
                         {inv.invoiceNumber}
                       </Link>
                       <p className="text-xs text-muted-foreground sm:hidden mt-0.5">
@@ -183,7 +183,7 @@ export default function InvoicesPage() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem>
-                            <Link href={`/invoices/${inv.id}`} className="w-full">Voir</Link>
+                            <Link href={`/dashboard/invoices/${inv.id}`} className="w-full">Voir</Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => handleDuplicate(inv.id)}>
                             Dupliquer

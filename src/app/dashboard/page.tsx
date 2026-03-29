@@ -59,7 +59,7 @@ export default function DashboardPage() {
             Bienvenue sur votre espace de facturation
           </p>
         </div>
-        <Link href="/invoices/new">
+        <Link href="/dashboard/invoices/new">
           <Button size="lg" className="animate-fade-in-up stagger-1 w-full sm:w-auto">
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -118,7 +118,7 @@ export default function DashboardPage() {
         <Card className="animate-fade-in-up stagger-5">
           <CardHeader className="flex flex-row items-center justify-between pb-3">
             <CardTitle className="text-base">Dernieres factures</CardTitle>
-            <Link href="/invoices" className="text-sm text-primary hover:underline">
+            <Link href="/dashboard/invoices" className="text-sm text-primary hover:underline">
               Voir tout
             </Link>
           </CardHeader>
@@ -132,7 +132,7 @@ export default function DashboardPage() {
                 {invoices.data.map((inv) => (
                   <Link
                     key={inv.id}
-                    href={`/invoices/${inv.id}`}
+                    href={`/dashboard/invoices/${inv.id}`}
                     className="flex items-center justify-between p-3 rounded-lg hover:bg-muted transition-colors"
                   >
                     <div className="min-w-0">
@@ -160,7 +160,7 @@ export default function DashboardPage() {
         <Card className="animate-fade-in-up stagger-6">
           <CardHeader className="flex flex-row items-center justify-between pb-3">
             <CardTitle className="text-base">Factures recues (PA)</CardTitle>
-            <Link href="/received" className="text-sm text-primary hover:underline">
+            <Link href="/dashboard/received" className="text-sm text-primary hover:underline">
               Voir tout
             </Link>
           </CardHeader>
@@ -173,7 +173,7 @@ export default function DashboardPage() {
                     : "Connectez votre Plateforme Agreee pour recevoir vos factures"}
                 </p>
                 {!paStatus?.connected && (
-                  <Link href="/settings">
+                  <Link href="/dashboard/settings">
                     <Button variant="outline" size="sm" className="mt-3">
                       Connecter ma PA
                     </Button>
@@ -185,7 +185,7 @@ export default function DashboardPage() {
                 {received.data.map((inv) => (
                   <Link
                     key={inv.id}
-                    href={`/received/${inv.id}`}
+                    href={`/dashboard/received/${inv.id}`}
                     className="flex items-center justify-between p-3 rounded-lg hover:bg-muted transition-colors"
                   >
                     <div className="min-w-0">

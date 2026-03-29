@@ -312,7 +312,7 @@ export default function ClientsPage() {
                   <TableRow key={client.id}>
                     <TableCell>
                       <Link
-                        href={`/clients/${client.id}`}
+                        href={`/dashboard/clients/${client.id}`}
                         className="text-sm font-medium text-primary hover:underline"
                       >
                         {clientName(client)}

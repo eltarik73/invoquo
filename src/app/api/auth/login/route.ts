@@ -1,75 +1,31 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { verifyPassword, setAuthCookie } from "@/lib/auth";
 import { apiSuccess, apiError } from "@/lib/api-response";
-import { loginSchema } from "@/modules/auth/schemas/auth";
-import { verifyPassword } from "@/modules/auth/lib/passwords";
-import {
-  generateAccessToken,
-  generateRefreshToken,
-} from "@/modules/auth/lib/tokens";
-import { setRefreshTokenCookie } from "@/modules/auth/lib/cookies";
 
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
-    const body = await request.json();
-    const parsed = loginSchema.safeParse(body);
-
-    if (!parsed.success) {
-      return apiError(parsed.error.issues[0].message, 422);
-    }
-
-    const { email, password } = parsed.data;
+    const { email, password } = await req.json();
 
     const user = await prisma.user.findUnique({
-      where: { email },
+      where: { email: email?.toLowerCase()?.trim() },
       include: {
         tenant: { select: { id: true, siret: true, companyName: true } },
       },
     });
-    if (!user) {
+
+    if (!user || !(await verifyPassword(password, user.passwordHash))) {
       return apiError("Email ou mot de passe incorrect", 401);
     }
 
-    const valid = await verifyPassword(password, user.passwordHash);
-    if (!valid) {
-      return apiError("Email ou mot de passe incorrect", 401);
-    }
-
-    const refresh = generateRefreshToken();
-
-    await prisma.refreshToken.create({
-      data: {
-        tokenHash: refresh.hash,
-        userId: user.id,
-        expiresAt: refresh.expiresAt,
-      },
-    });
-
-    const accessToken = generateAccessToken({
-      userId: user.id,
-      email: user.email,
-      role: user.role,
-      tenantId: user.tenantId,
-    });
-
-    await setRefreshTokenCookie(refresh.token);
+    await setAuthCookie(user.id, user.role, user.tenantId || undefined);
 
     return apiSuccess({
-      accessToken,
-      user: {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-        tenantId: user.tenantId,
-      },
-      tenant: user.tenant ? {
-        id: user.tenant.id,
-        siret: user.tenant.siret,
-        companyName: user.tenant.companyName,
-      } : null,
+      user: { id: user.id, email: user.email, role: user.role },
+      tenant: user.tenant,
     });
   } catch (error) {
     console.error("Login error:", error);
-    return apiError("Erreur interne du serveur", 500);
+    return apiError("Erreur interne", 500);
   }
 }

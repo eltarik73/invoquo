@@ -1,81 +1,75 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 
-const PUBLIC_PATHS = [
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET!);
+const COOKIE_NAME = "invoquo-session";
+
+const PUBLIC_ROUTES = [
   "/api/auth/register",
   "/api/auth/login",
-  "/api/auth/refresh",
   "/api/auth/logout",
   "/api/pa/callback",
   "/api/webhooks",
+  "/api/lookup",
 ];
 
-function isPublicPath(pathname: string): boolean {
-  return PUBLIC_PATHS.some((p) => pathname.startsWith(p));
-}
+export async function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl;
+  const token = req.cookies.get(COOKIE_NAME)?.value;
 
-export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+  const isProtectedAPI =
+    pathname.startsWith("/api/") &&
+    !PUBLIC_ROUTES.some((r) => pathname.startsWith(r));
+  const isProtectedPage = pathname.startsWith("/dashboard");
 
-  // Only protect /api (except public auth routes) and /dashboard
-  const isApiRoute = pathname.startsWith("/api");
-  const isDashboardRoute = pathname.startsWith("/dashboard");
-
-  if (!isApiRoute && !isDashboardRoute) {
-    return NextResponse.next();
-  }
-
-  if (isApiRoute && isPublicPath(pathname)) {
-    return NextResponse.next();
-  }
-
-  const authHeader = request.headers.get("authorization");
-
-  if (!authHeader?.startsWith("Bearer ")) {
-    if (isDashboardRoute) {
-      return NextResponse.redirect(new URL("/login", request.url));
-    }
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Token d'accès manquant",
-        timestamp: new Date().toISOString(),
-      },
-      { status: 401 }
-    );
-  }
-
-  const token = authHeader.slice(7);
-
-  try {
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
-    const { payload } = await jwtVerify(token, secret);
-
-    // Forward user info in headers for downstream routes
-    const response = NextResponse.next();
-    response.headers.set("x-user-id", payload.userId as string);
-    response.headers.set("x-user-email", payload.email as string);
-    response.headers.set("x-user-role", payload.role as string);
-    if (payload.tenantId) {
-      response.headers.set("x-tenant-id", payload.tenantId as string);
+  if (isProtectedAPI || isProtectedPage) {
+    if (!token) {
+      if (pathname.startsWith("/api/")) {
+        return NextResponse.json(
+          { success: false, error: "Non autorise" },
+          { status: 401 },
+        );
+      }
+      return NextResponse.redirect(new URL("/login", req.url));
     }
 
-    return response;
-  } catch {
-    if (isDashboardRoute) {
-      return NextResponse.redirect(new URL("/login", request.url));
+    try {
+      const { payload } = await jwtVerify(token, JWT_SECRET);
+
+      const res = NextResponse.next();
+      res.headers.set("x-user-id", payload.sub as string);
+      res.headers.set("x-user-role", payload.role as string);
+      if (payload.tenantId)
+        res.headers.set("x-tenant-id", payload.tenantId as string);
+      return res;
+    } catch {
+      const res = pathname.startsWith("/api/")
+        ? NextResponse.json(
+            { success: false, error: "Session expiree" },
+            { status: 401 },
+          )
+        : NextResponse.redirect(new URL("/login", req.url));
+      res.cookies.delete(COOKIE_NAME);
+      return res;
     }
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Token d'accès invalide ou expiré",
-        timestamp: new Date().toISOString(),
-      },
-      { status: 401 }
-    );
   }
+
+  // Redirect if already logged in on login/signup
+  if (pathname === "/login" || pathname === "/signup") {
+    if (token) {
+      try {
+        await jwtVerify(token, JWT_SECRET);
+        return NextResponse.redirect(new URL("/dashboard", req.url));
+      } catch {
+        // invalid token, let through
+      }
+    }
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/api/:path*", "/dashboard/:path*"],
+  matcher: ["/dashboard/:path*", "/api/:path*", "/login", "/signup"],
 };

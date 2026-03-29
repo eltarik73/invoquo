@@ -108,7 +108,7 @@ export default function QuotesPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fade-in-up">
         <h1 className="text-2xl font-bold">Devis</h1>
-        <Link href="/invoices/new">
+        <Link href="/dashboard/invoices/new">
           <Button size="lg" className="w-full sm:w-auto">
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -152,7 +152,7 @@ export default function QuotesPage() {
             </svg>
             <h2 className="text-lg font-semibold mt-4">Aucun devis pour le moment</h2>
             <p className="text-muted-foreground text-sm mt-1">Creez votre premier devis pour commencer</p>
-            <Link href="/invoices/new">
+            <Link href="/dashboard/invoices/new">
               <Button className="mt-6">
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -195,7 +195,7 @@ export default function QuotesPage() {
                   data.data.map((q) => (
                     <TableRow key={q.id} className="group">
                       <TableCell>
-                        <Link href={`/quotes/${q.id}`} className="font-mono text-sm font-medium text-primary hover:underline">
+                        <Link href={`/dashboard/quotes/${q.id}`} className="font-mono text-sm font-medium text-primary hover:underline">
                           {q.quoteNumber}
                         </Link>
                         <p className="text-xs text-muted-foreground sm:hidden mt-0.5">{clientName(q.client)}</p>
@@ -218,7 +218,7 @@ export default function QuotesPage() {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem>
-                              <Link href={`/quotes/${q.id}`} className="w-full">Voir le detail</Link>
+                              <Link href={`/dashboard/quotes/${q.id}`} className="w-full">Voir le detail</Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem>Dupliquer</DropdownMenuItem>
                             <DropdownMenuItem>Envoyer par email</DropdownMenuItem>
@@ -230,7 +230,7 @@ export default function QuotesPage() {
                             <DropdownMenuItem>Telecharger PDF</DropdownMenuItem>
                             {q.convertedToInvoiceId && (
                               <DropdownMenuItem>
-                                <Link href={`/invoices/${q.convertedToInvoiceId}`} className="w-full">Voir la facture</Link>
+                                <Link href={`/dashboard/invoices/${q.convertedToInvoiceId}`} className="w-full">Voir la facture</Link>
                               </DropdownMenuItem>
                             )}
                           </DropdownMenuContent>

@@ -1,123 +1,95 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { hashPassword, setAuthCookie } from "@/lib/auth";
 import { apiSuccess, apiError } from "@/lib/api-response";
-import { registerSchema } from "@/modules/auth/schemas/auth";
-import { hashPassword } from "@/modules/auth/lib/passwords";
-import {
-  generateAccessToken,
-  generateRefreshToken,
-} from "@/modules/auth/lib/tokens";
-import { setRefreshTokenCookie } from "@/modules/auth/lib/cookies";
-import { fetchCompanyBySiret } from "@/modules/auth/lib/pappers";
+import { z } from "zod";
 
-type TransactionClient = Omit<
-  typeof prisma,
-  "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
->;
+const registerSchema = z.object({
+  email: z.string().email("Email invalide").transform((v) => v.toLowerCase().trim()),
+  password: z.string().min(8, "8 caracteres minimum"),
+  siret: z.string().regex(/^\d{14}$/, "SIRET invalide (14 chiffres)"),
+  companyName: z.string().min(2).optional(),
+});
 
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
-    const body = await request.json();
-    const parsed = registerSchema.safeParse(body);
+    const body = await req.json();
+    const data = registerSchema.parse(body);
 
-    if (!parsed.success) {
-      return apiError(parsed.error.issues[0].message, 422);
-    }
+    const existing = await prisma.user.findUnique({ where: { email: data.email } });
+    if (existing) return apiError("Email deja utilise", 409);
 
-    const { email, password, siret } = parsed.data;
+    const existingTenant = await prisma.tenant.findUnique({ where: { siret: data.siret } });
+    if (existingTenant) return apiError("Ce SIRET est deja inscrit", 409);
 
-    // Check if email already exists
-    const existingUser = await prisma.user.findUnique({ where: { email } });
-    if (existingUser) {
-      return apiError("Un compte existe déjà avec cette adresse email", 409);
-    }
-
-    // Fetch company data from Pappers
-    const company = await fetchCompanyBySiret(siret);
-    if (!company) {
-      return apiError("SIRET introuvable. Vérifiez le numéro saisi.", 422);
-    }
-
-    // Check if tenant already exists
-    const existingTenant = await prisma.tenant.findUnique({
-      where: { siret },
-    });
-
-    const passwordHash = await hashPassword(password);
-    const refresh = generateRefreshToken();
-
-    // Create user + tenant (or attach to existing tenant) in a transaction
-    const user = await prisma.$transaction(async (tx: TransactionClient) => {
-      let tenantId: string;
-
-      if (existingTenant) {
-        tenantId = existingTenant.id;
-      } else {
-        const tenant = await tx.tenant.create({
-          data: {
-            siret: company.siret,
-            siren: company.siren,
-            companyName: company.companyName,
-            legalForm: company.legalForm,
-            capital: company.capital,
-            address: company.address,
-            postalCode: company.postalCode,
-            city: company.city,
-            vatNumber: company.vatNumber,
-            apeCode: company.apeCode,
-            rcs: company.rcs,
-          },
-        });
-        tenantId = tenant.id;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let pappersData: any = {};
+    if (process.env.PAPPERS_API_KEY) {
+      try {
+        const res = await fetch(
+          `https://api.pappers.fr/v2/entreprise?siret=${data.siret}&api_token=${process.env.PAPPERS_API_KEY}`,
+        );
+        if (res.ok) {
+          const p = await res.json();
+          pappersData = {
+            siren: p.siren || data.siret.slice(0, 9),
+            companyName: p.denomination || p.nom_entreprise || data.companyName || "",
+            legalForm: p.forme_juridique || null,
+            capital: p.capital ? `${p.capital} EUR` : null,
+            address: p.siege?.adresse_ligne_1 || "",
+            postalCode: p.siege?.code_postal || "",
+            city: p.siege?.ville || "",
+            vatNumber: p.numero_tva_intracommunautaire || null,
+            apeCode: p.code_naf ? `${p.code_naf} — ${p.libelle_code_naf}` : null,
+          };
+        }
+      } catch (e) {
+        console.error("Pappers API error:", e);
       }
+    }
 
-      const newUser = await tx.user.create({
+    const result = await prisma.$transaction(async (tx) => {
+      const tenant = await tx.tenant.create({
         data: {
-          email,
-          passwordHash,
-          tenantId,
+          siret: data.siret,
+          siren: pappersData.siren || data.siret.slice(0, 9),
+          companyName: pappersData.companyName || data.companyName || data.email.split("@")[0],
+          legalForm: pappersData.legalForm,
+          capital: pappersData.capital,
+          address: pappersData.address || "",
+          postalCode: pappersData.postalCode || "",
+          city: pappersData.city || "",
+          vatNumber: pappersData.vatNumber,
+          apeCode: pappersData.apeCode,
         },
       });
 
-      await tx.refreshToken.create({
+      const user = await tx.user.create({
         data: {
-          tokenHash: refresh.hash,
-          userId: newUser.id,
-          expiresAt: refresh.expiresAt,
+          email: data.email,
+          passwordHash: await hashPassword(data.password),
+          role: "user",
+          tenantId: tenant.id,
         },
       });
 
-      return newUser;
+      return { user, tenant };
     });
 
-    const accessToken = generateAccessToken({
-      userId: user.id,
-      email: user.email,
-      role: user.role,
-      tenantId: user.tenantId,
-    });
-
-    await setRefreshTokenCookie(refresh.token);
+    await setAuthCookie(result.user.id, result.user.role, result.tenant.id);
 
     return apiSuccess(
       {
-        accessToken,
-        user: {
-          id: user.id,
-          email: user.email,
-          role: user.role,
-          tenantId: user.tenantId,
-        },
-        tenant: {
-          id: user.tenantId,
-          siret: company.siret,
-          companyName: company.companyName,
-        },
+        user: { id: result.user.id, email: result.user.email, role: result.user.role },
+        tenant: { id: result.tenant.id, siret: result.tenant.siret, companyName: result.tenant.companyName },
       },
-      201
+      201,
     );
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return apiError(error.issues[0].message, 422);
+    }
     console.error("Register error:", error);
-    return apiError("Erreur interne du serveur", 500);
+    return apiError("Erreur interne", 500);
   }
 }
