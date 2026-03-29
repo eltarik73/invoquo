@@ -99,3 +99,39 @@ export async function PUT(
     return apiError("Erreur interne du serveur", 500);
   }
 }
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  try {
+    const ctx = getTenantId(request);
+    if (ctx.error) return ctx.error;
+
+    const { id } = await params;
+
+    const client = await prisma.client.findUnique({ where: { id } });
+    if (!client || client.tenantId !== ctx.tenantId) {
+      return apiError("Client introuvable", 404);
+    }
+
+    // Check if client has invoices or quotes
+    const [invoiceCount, quoteCount] = await Promise.all([
+      prisma.invoice.count({ where: { clientId: id } }),
+      prisma.quote.count({ where: { clientId: id } }),
+    ]);
+
+    if (invoiceCount > 0 || quoteCount > 0) {
+      return apiError(
+        `Ce client a ${invoiceCount} facture(s) et ${quoteCount} devis. Il ne peut pas etre supprime.`,
+        409,
+      );
+    }
+
+    await prisma.client.delete({ where: { id } });
+    return apiSuccess({ message: "Client supprime" });
+  } catch (error) {
+    console.error("Client delete error:", error);
+    return apiError("Erreur interne du serveur", 500);
+  }
+}

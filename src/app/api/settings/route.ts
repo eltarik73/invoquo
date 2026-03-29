@@ -51,6 +51,11 @@ export async function PUT(request: NextRequest) {
       "cgvText", "attachCgv", "vatOnDebits", "isMemberAssociation", "isVatExempt",
     ];
 
+    // Reject empty companyName (legally required on invoices)
+    if ("companyName" in body && (!body.companyName || !body.companyName.trim())) {
+      return apiError("La raison sociale ne peut pas etre vide", 422);
+    }
+
     const data: Record<string, unknown> = {};
     for (const field of ALLOWED_FIELDS) {
       if (field in body) {

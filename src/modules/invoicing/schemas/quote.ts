@@ -13,8 +13,8 @@ const quoteLineSchema = z.object({
 
 export const createQuoteSchema = z.object({
   clientId: z.string().min(1, "Le client est requis"),
-  date: z.coerce.date(),
-  validUntil: z.coerce.date(),
+  date: z.coerce.date({ message: "La date du devis est requise" }),
+  validUntil: z.coerce.date({ message: "La date de validite est requise" }),
   operationCategory: z.enum(["goods", "services", "mixed"], {
     message: "La catégorie d'opération est obligatoire",
   }),
@@ -22,7 +22,10 @@ export const createQuoteSchema = z.object({
     .array(quoteLineSchema)
     .min(1, "Au moins une ligne est requise"),
   notes: z.string().optional(),
-});
+}).refine(
+  (data) => data.validUntil >= data.date,
+  { message: "La date de validite ne peut pas etre anterieure a la date du devis", path: ["validUntil"] },
+);
 
 export const updateQuoteSchema = z.object({
   clientId: z.string().min(1).optional(),

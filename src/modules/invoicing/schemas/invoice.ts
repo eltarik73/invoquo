@@ -38,7 +38,10 @@ export const createInvoiceSchema = z.object({
   discount: discountSchema,
   notes: z.string().optional(),
   finalize: z.boolean().default(false),
-});
+}).refine(
+  (data) => data.dueDate >= data.date,
+  { message: "La date d'echeance ne peut pas etre anterieure a la date de facture", path: ["dueDate"] },
+);
 
 export const updateInvoiceSchema = z.object({
   clientId: z.string().min(1).optional(),
