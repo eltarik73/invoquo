@@ -168,7 +168,9 @@ export async function POST(request: NextRequest) {
 
     return apiSuccess({ invoice }, 201);
   } catch (error) {
-    console.error("Invoice create error:", error);
+    const msg = error instanceof Error ? error.message : String(error);
+    const stack = error instanceof Error ? error.stack : "";
+    console.error("Invoice create error:", msg, stack);
     return apiError("Erreur interne du serveur", 500);
   }
 }
