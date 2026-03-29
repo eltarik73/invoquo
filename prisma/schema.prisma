@@ -1,0 +1,320 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// === AUTH ===
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  role         String   @default("user") // "user" | "admin"
+  firstName    String?
+  lastName     String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  tenant   Tenant? @relation(fields: [tenantId], references: [id])
+  tenantId String?
+
+  refreshTokens RefreshToken[]
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+// === TENANT ===
+
+model Tenant {
+  id               String  @id @default(cuid())
+  siret            String  @unique
+  siren            String
+  companyName      String
+  legalForm        String? // EI, EURL, SARL, SAS, SASU
+  capital          String?
+  address          String
+  postalCode       String
+  city             String
+  country          String  @default("FR")
+  vatNumber        String? // TVA intracommunautaire
+  apeCode          String?
+  insuranceNumber  String? // assurance décennale
+  insuranceProvider String?
+  insuranceCoverage String?
+  rcs              String?
+  phone            String?
+  email            String?
+  website          String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // PA
+  paProvider       String?   // "pennylane" | etc.
+  paAccessToken    String?   // chiffré
+  paRefreshToken   String?   // chiffré
+  paTokenExpiresAt DateTime?
+  paCompanyId      String?   // ID entreprise chez la PA
+  paLastSync       DateTime?
+  paStatus         String    @default("disconnected") // "connected" | "disconnected" | "error"
+
+  // Settings - Numérotation
+  invoicePrefix    String @default("F-")
+  quotePrefix      String @default("D-")
+  creditNotePrefix String @default("AV-")
+  nextInvoiceNum   Int    @default(1)
+  nextQuoteNum     Int    @default(1)
+  nextCreditNum    Int    @default(1)
+
+  // Settings - Template
+  templateId       String @default("classic") // classic, modern, minimal, lateral, bold
+  accentColor      String @default("#7c3aed")
+  logoUrl          String?
+  headerLine1      String?
+  headerLine2      String?
+  footerLine1      String?
+  footerLine2      String?
+
+  // Settings - Banque
+  iban              String?
+  bic               String?
+  bankName          String?
+  bankAccountHolder String?
+  showBankOnInvoice Boolean @default(true)
+
+  // Settings - Paiement
+  defaultPaymentTerms         String @default("30_days") // a_reception, 30_days, 45_days_end_of_month, 60_days
+  defaultLatePenaltyRate      String @default("3x_legal_rate")
+  defaultEarlyPaymentDiscount String @default("Néant")
+
+  // Settings - Emails
+  emailSubjectTemplate   String?
+  emailBodyTemplate      String?
+  reminderSubjectTemplate String?
+  reminderBodyTemplate   String?
+  autoReminder           Boolean @default(false)
+  reminderDays           Int     @default(7)
+
+  // Settings - Mentions
+  cgvText              String?
+  attachCgv            Boolean @default(false)
+  vatOnDebits          Boolean @default(false)
+  isMemberAssociation  Boolean @default(false)
+  isVatExempt          Boolean @default(false) // art. 293 B
+
+  // Embed
+  apiKey          String?   @unique // pour les apps hôtes
+  apiKeyCreatedAt DateTime?
+
+  // Relations
+  users            User[]
+  clients          Client[]
+  invoices         Invoice[]
+  receivedInvoices ReceivedInvoice[]
+  quotes           Quote[]
+  exports          Export[]
+
+  @@index([siren])
+}
+
+// === CLIENTS ===
+
+model Client {
+  id               String  @id @default(cuid())
+  tenantId         String
+  tenant           Tenant  @relation(fields: [tenantId], references: [id])
+  type             String  @default("company") // "company" | "individual"
+  companyName      String?
+  firstName        String?
+  lastName         String?
+  siret            String?
+  siren            String?
+  vatNumber        String?
+  email            String?
+  phone            String?
+  address          String?
+  postalCode       String?
+  city             String?
+  country          String  @default("FR")
+  deliveryAddress    String?
+  deliveryPostalCode String?
+  deliveryCity       String?
+  source           String  @default("direct") // "direct" | "bativio" | "klikgo"
+  notes            String?
+  paCustomerId     String? // ID chez la PA
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  invoices Invoice[]
+  quotes   Quote[]
+
+  @@unique([tenantId, siret])
+  @@index([tenantId, createdAt])
+}
+
+// === FACTURES ===
+
+model Invoice {
+  id                String   @id @default(cuid())
+  tenantId          String
+  tenant            Tenant   @relation(fields: [tenantId], references: [id])
+  clientId          String
+  client            Client   @relation(fields: [clientId], references: [id])
+  invoiceNumber     String   // F-2026-001 (séquentiel, jamais modifiable)
+  status            String   @default("draft") // draft, pending, sent, transmitted, accepted, paid, overdue, rejected
+  type              String   @default("invoice") // invoice, credit_note, deposit
+  date              DateTime
+  dueDate           DateTime
+  paymentTerms      String   // a_reception, 30_days, etc.
+  operationCategory String   // goods, services, mixed
+  currency          String   @default("EUR")
+  totalHT           Decimal  @db.Decimal(12, 2)
+  totalVAT          Decimal  @db.Decimal(12, 2)
+  totalTTC          Decimal  @db.Decimal(12, 2)
+  discount          Decimal? @db.Decimal(12, 2)
+  discountType      String?  // percentage, fixed
+  notes             String?
+  pdfUrl            String?  // Vercel Blob URL
+  facturxUrl        String?  // Factur-X PDF URL
+  paInvoiceId       String?  // ID chez la PA
+  paStatus          String?  // statut PA (AFNOR)
+  paSentAt          DateTime?
+  paidAt            DateTime?
+  sentAt            DateTime? // envoyé par email au client
+  sendCount         Int      @default(0)
+  linkedQuoteId     String?
+  linkedCreditNoteId String?
+  fromQuoteId       String?  // si converti depuis un devis
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  lines InvoiceLine[]
+
+  @@unique([tenantId, invoiceNumber])
+  @@index([tenantId, status, createdAt])
+  @@index([tenantId, clientId])
+  @@index([paInvoiceId])
+}
+
+model InvoiceLine {
+  id          String  @id @default(cuid())
+  invoiceId   String
+  invoice     Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  position    Int
+  description String
+  quantity    Decimal @db.Decimal(10, 3)
+  unitPriceHT Decimal @db.Decimal(12, 2)
+  vatRate     Decimal @db.Decimal(5, 2) // 20.00, 10.00, 5.50, 0.00
+  totalHT     Decimal @db.Decimal(12, 2)
+  totalVAT    Decimal @db.Decimal(12, 2)
+  totalTTC    Decimal @db.Decimal(12, 2)
+  unit        String? // piece, hour, m2, kg, etc.
+
+  @@index([invoiceId])
+}
+
+// === FACTURES REÇUES (PA) ===
+
+model ReceivedInvoice {
+  id             String   @id @default(cuid())
+  tenantId       String
+  tenant         Tenant   @relation(fields: [tenantId], references: [id])
+  paInvoiceId    String   // ID chez la PA (clé unique pour upsert)
+  supplierName   String
+  supplierSiret  String?
+  invoiceNumber  String?
+  date           DateTime?
+  dueDate        DateTime?
+  totalHT        Decimal? @db.Decimal(12, 2)
+  totalTTC       Decimal? @db.Decimal(12, 2)
+  currency       String   @default("EUR")
+  status         String   @default("pending") // pending, validated, rejected
+  paStatus       String?  // statut PA
+  pdfUrl         String?
+  category       String?  // fournisseur classifié
+  notes          String?
+  receivedAt     DateTime @default(now())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([tenantId, paInvoiceId])
+  @@index([tenantId, status, receivedAt])
+}
+
+// === DEVIS ===
+
+model Quote {
+  id                   String   @id @default(cuid())
+  tenantId             String
+  tenant               Tenant   @relation(fields: [tenantId], references: [id])
+  clientId             String
+  client               Client   @relation(fields: [clientId], references: [id])
+  quoteNumber          String
+  status               String   @default("draft") // draft, sent, accepted, rejected, expired
+  date                 DateTime
+  validUntil           DateTime
+  operationCategory    String
+  totalHT              Decimal  @db.Decimal(12, 2)
+  totalVAT             Decimal  @db.Decimal(12, 2)
+  totalTTC             Decimal  @db.Decimal(12, 2)
+  notes                String?
+  pdfUrl               String?
+  convertedToInvoiceId String?
+  sentAt               DateTime?
+  acceptedAt           DateTime?
+  rejectedAt           DateTime?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  lines QuoteLine[]
+
+  @@unique([tenantId, quoteNumber])
+  @@index([tenantId, status, createdAt])
+}
+
+model QuoteLine {
+  id          String  @id @default(cuid())
+  quoteId     String
+  quote       Quote   @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  position    Int
+  description String
+  quantity    Decimal @db.Decimal(10, 3)
+  unitPriceHT Decimal @db.Decimal(12, 2)
+  vatRate     Decimal @db.Decimal(5, 2)
+  totalHT     Decimal @db.Decimal(12, 2)
+  totalVAT    Decimal @db.Decimal(12, 2)
+  totalTTC    Decimal @db.Decimal(12, 2)
+  unit        String?
+
+  @@index([quoteId])
+}
+
+// === EXPORTS ===
+
+model Export {
+  id          String   @id @default(cuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  type        String   // fec, csv, pdf_report, facturx_archive
+  periodStart DateTime
+  periodEnd   DateTime
+  fileUrl     String?  // Vercel Blob URL
+  fileName    String
+  fileSize    Int?
+  status      String   @default("pending") // pending, processing, completed, failed
+  createdAt   DateTime @default(now())
+
+  @@index([tenantId, createdAt])
+}
