@@ -104,7 +104,7 @@ export async function getNextIdInterne(
     .readInt32BE(0);
 
   await tx.$queryRawUnsafe(
-    `SELECT pg_advisory_xact_lock(${lockId})`,
+    `SELECT pg_advisory_xact_lock(${lockId})::text`,
   );
 
   const maxResult: Array<{ max_id: number | null }> =

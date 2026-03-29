@@ -24,7 +24,7 @@ export async function generateDocumentNumber(
   // Advisory lock based on tenantId hash to prevent concurrent gaps
   const lockKey = hashStringToInt(tenantId + type);
   await tx.$queryRawUnsafe(
-    `SELECT pg_advisory_xact_lock(${lockKey})`,
+    `SELECT pg_advisory_xact_lock(${lockKey})::text`,
   );
 
   const tenant = await tx.tenant.findUniqueOrThrow({
