@@ -193,6 +193,11 @@ export default function InvoicesPage() {
                               Télécharger PDF
                             </Link>
                           </DropdownMenuItem>
+                          {(inv.status === "overdue" || inv.status === "pending") && (
+                            <DropdownMenuItem onClick={() => alert("Fonctionnalité bientôt disponible")}>
+                              Relancer
+                            </DropdownMenuItem>
+                          )}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
