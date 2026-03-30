@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import { randomUUID } from "crypto";
 import { prisma } from "@/lib/prisma";
 import { hashPassword, setAuthCookie } from "@/lib/auth";
 import { apiSuccess, apiError } from "@/lib/api-response";
@@ -61,6 +62,8 @@ export async function POST(req: NextRequest) {
           city: pappersData.city || "",
           vatNumber: pappersData.vatNumber,
           apeCode: pappersData.apeCode,
+          apiKey: `inv_${randomUUID().replace(/-/g, "")}`,
+          apiKeyCreatedAt: new Date(),
         },
       });
 
