@@ -25,7 +25,7 @@ export function SeoPage({
     <div className="min-h-screen bg-white">
       <Nav />
       <main className="pt-24 pb-16 px-4">
-        <article className="max-w-3xl mx-auto prose prose-gray prose-headings:font-bold prose-headings:text-gray-900 prose-a:text-violet-600">
+        <article className="max-w-4xl mx-auto prose prose-gray prose-lg max-w-none prose-headings:font-bold prose-headings:text-gray-900 prose-headings:tracking-tight prose-a:text-violet-600 prose-a:font-medium prose-a:no-underline hover:prose-a:underline prose-table:border-collapse prose-th:bg-gray-50 prose-th:px-4 prose-th:py-2 prose-th:text-left prose-th:text-sm prose-th:font-semibold prose-th:border prose-th:border-gray-200 prose-td:px-4 prose-td:py-2 prose-td:border prose-td:border-gray-200 prose-td:text-sm prose-strong:text-gray-900 prose-li:marker:text-violet-500">
           {children}
         </article>
       </main>

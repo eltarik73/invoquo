@@ -106,28 +106,27 @@ export default function LandingPage() {
       </section>
 
       {/* Urgence */}
-      <section className="py-12 px-4 bg-red-50 border-y border-red-100" aria-label="Obligation legale">
-        <div className="max-w-4xl mx-auto text-center">
+      <section className="py-14 px-4 bg-gradient-to-b from-red-50 to-white" aria-label="Obligation légale">
+        <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-2xl font-bold text-gray-900">Septembre 2026 : la facturation change pour tout le monde</h2>
-          <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
-            <div className="bg-white rounded-lg p-4 border border-red-100">
-              <p className="text-2xl font-bold font-mono text-red-600">100%</p>
-              <p className="text-xs text-gray-600 mt-1">des entreprises doivent recevoir des factures electroniques</p>
+          <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-5">
+            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+              <p className="text-3xl font-bold font-mono text-red-600">100 %</p>
+              <p className="text-sm text-gray-600 mt-2 leading-snug">des entreprises doivent recevoir des factures électroniques</p>
             </div>
-            <div className="bg-white rounded-lg p-4 border border-red-100">
-              <p className="text-2xl font-bold font-mono text-red-600">15 EUR</p>
-              <p className="text-xs text-gray-600 mt-1">d&apos;amende par facture non conforme</p>
+            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+              <p className="text-3xl font-bold font-mono text-red-600">15 €</p>
+              <p className="text-sm text-gray-600 mt-2 leading-snug">d&apos;amende par facture non conforme</p>
             </div>
-            <div className="bg-white rounded-lg p-4 border border-red-100">
-              <p className="text-2xl font-bold font-mono text-red-600">PDF</p>
-              <p className="text-xs text-gray-600 mt-1">par email ne suffit plus — il faut du Factur-X via PA</p>
+            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+              <p className="text-3xl font-bold font-mono text-red-600">PDF</p>
+              <p className="text-sm text-gray-600 mt-2 leading-snug">par email ne suffit plus — Factur-X via PA obligatoire</p>
             </div>
           </div>
-          <p className="mt-4 text-sm text-gray-600">
-            <Link href="/facturation-electronique-2026" className="text-violet-600 font-medium hover:underline">
-              Comprendre la reforme en 5 minutes →
-            </Link>
-          </p>
+          <Link href="/facturation-electronique-2026" className="inline-flex items-center gap-1.5 mt-6 text-sm font-semibold text-violet-600 hover:text-violet-700 transition-colors">
+            Comprendre la réforme en 5 minutes
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
+          </Link>
         </div>
       </section>
 
