@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Button } from "@/components/ui/button";
 import { Nav } from "@/components/landing/nav";
 import { Countdown } from "@/components/landing/countdown";
+import { Footer } from "@/components/landing/footer";
 
 export const metadata: Metadata = {
   title: "Invoquo — Facturation Electronique Conforme 2026 | Plateforme Agreee",
@@ -307,16 +308,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-12 px-4 border-t border-gray-100" role="contentinfo">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <svg viewBox="0 0 32 32" fill="none" width={24} height={24} aria-hidden="true"><rect width="32" height="32" rx="8" fill="#7c3aed" /><path d="M8 10h4v12H8V10z" fill="#fff" /><path d="M15 10h4l5 12h-4l-5-12z" fill="#fff" opacity=".9" /><circle cx="24" cy="10" r="2" fill="#a78bfa" /></svg>
-            <span className="font-semibold text-gray-900">invoquo</span>
-          </div>
-          <p className="text-sm text-gray-500">&copy; {new Date().getFullYear()} Invoquo. Logiciel de facturation electronique conforme.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

@@ -21,6 +21,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/logiciel-facturation-artisan`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     { url: `${baseUrl}/logiciel-facturation-auto-entrepreneur`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     { url: `${baseUrl}/conformite`, lastModified: now, changeFrequency: "monthly", priority: 0.85 },
+    { url: `${baseUrl}/aide`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${baseUrl}/docs/api`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
 
     // Guides
     { url: `${baseUrl}/guide/factur-x`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
