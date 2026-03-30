@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -72,7 +72,7 @@ function plus30Days(): string {
 
 let lineCounter = 1;
 
-export default function NewQuotePage() {
+function NewQuoteContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { data: clientsData, refetch: refetchClients } = useApi<{ data: Client[] }>(
@@ -424,5 +424,13 @@ export default function NewQuotePage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function NewQuotePage() {
+  return (
+    <Suspense fallback={<div className="py-12 text-center text-muted-foreground">Chargement...</div>}>
+      <NewQuoteContent />
+    </Suspense>
   );
 }

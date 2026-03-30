@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -68,7 +68,7 @@ function dueDateFromTerms(date: string, terms: string): string {
   return d.toISOString().slice(0, 10);
 }
 
-export default function NewInvoicePage() {
+function NewInvoiceContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const preselectedClient = searchParams.get("clientId") || "";
@@ -302,5 +302,13 @@ export default function NewInvoicePage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function NewInvoicePage() {
+  return (
+    <Suspense fallback={<div className="py-12 text-center text-muted-foreground">Chargement...</div>}>
+      <NewInvoiceContent />
+    </Suspense>
   );
 }
