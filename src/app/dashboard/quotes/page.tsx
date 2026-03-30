@@ -84,9 +84,9 @@ export default function QuotesPage() {
     { value: "all", label: "Tous", count: counts.all },
     { value: "draft", label: "Brouillons", count: counts.draft },
     { value: "sent", label: "En attente", count: counts.sent },
-    { value: "accepted", label: "Acceptes", count: counts.accepted },
-    { value: "rejected", label: "Refuses", count: counts.rejected },
-    { value: "expired", label: "Expires", count: counts.expired },
+    { value: "accepted", label: "Acceptés", count: counts.accepted },
+    { value: "rejected", label: "Refusés", count: counts.rejected },
+    { value: "expired", label: "Expirés", count: counts.expired },
   ];
 
   async function handleConvert(id: string) {
@@ -151,7 +151,7 @@ export default function QuotesPage() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15a2.25 2.25 0 012.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25z" />
             </svg>
             <h2 className="text-lg font-semibold mt-4">Aucun devis pour le moment</h2>
-            <p className="text-muted-foreground text-sm mt-1">Creez votre premier devis pour commencer</p>
+            <p className="text-muted-foreground text-sm mt-1">Créez votre premier devis pour commencer</p>
             <Link href="/dashboard/invoices/new">
               <Button className="mt-6">
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
@@ -173,7 +173,7 @@ export default function QuotesPage() {
                   <TableHead className="hidden sm:table-cell">Client</TableHead>
                   <TableHead>Statut</TableHead>
                   <TableHead className="hidden md:table-cell">Date</TableHead>
-                  <TableHead className="hidden md:table-cell">Validite</TableHead>
+                  <TableHead className="hidden md:table-cell">Validité</TableHead>
                   <TableHead className="text-right">Montant TTC</TableHead>
                   <TableHead className="w-10" />
                 </TableRow>
@@ -188,7 +188,7 @@ export default function QuotesPage() {
                 ) : !data?.data?.length ? (
                   <TableRow>
                     <TableCell colSpan={7} className="text-center py-12 text-muted-foreground">
-                      Aucun devis trouve
+                      Aucun devis trouvé
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -227,7 +227,7 @@ export default function QuotesPage() {
                                 {converting === q.id ? "Conversion..." : "Convertir en facture"}
                               </DropdownMenuItem>
                             )}
-                            <DropdownMenuItem>Telecharger PDF</DropdownMenuItem>
+                            <DropdownMenuItem>Télécharger PDF</DropdownMenuItem>
                             {q.convertedToInvoiceId && (
                               <DropdownMenuItem>
                                 <Link href={`/dashboard/invoices/${q.convertedToInvoiceId}`} className="w-full">Voir la facture</Link>

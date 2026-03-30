@@ -29,9 +29,9 @@ const STATUS_TABS = [
   { value: "draft", label: "Brouillons" },
   { value: "pending", label: "En attente" },
   { value: "transmitted", label: "Transmises" },
-  { value: "paid", label: "Payees" },
+  { value: "paid", label: "Payées" },
   { value: "overdue", label: "En retard" },
-  { value: "rejected", label: "Rejetees" },
+  { value: "rejected", label: "Rejetées" },
 ];
 
 interface Invoice {
@@ -124,10 +124,10 @@ export default function InvoicesPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Numero</TableHead>
+                <TableHead>Numéro</TableHead>
                 <TableHead className="hidden sm:table-cell">Client</TableHead>
                 <TableHead className="hidden md:table-cell">Date</TableHead>
-                <TableHead className="hidden md:table-cell">Echeance</TableHead>
+                <TableHead className="hidden md:table-cell">Échéance</TableHead>
                 <TableHead>Statut</TableHead>
                 <TableHead className="text-right">Montant TTC</TableHead>
                 <TableHead className="w-10" />
@@ -143,7 +143,7 @@ export default function InvoicesPage() {
               ) : !data?.data?.length ? (
                 <TableRow>
                   <TableCell colSpan={7} className="text-center py-12 text-muted-foreground">
-                    Aucune facture trouvee
+                    Aucune facture trouvée
                   </TableCell>
                 </TableRow>
               ) : (
@@ -190,7 +190,7 @@ export default function InvoicesPage() {
                           </DropdownMenuItem>
                           <DropdownMenuItem>
                             <Link href={`/api/invoices/${inv.id}/pdf`} target="_blank" className="w-full">
-                              Telecharger PDF
+                              Télécharger PDF
                             </Link>
                           </DropdownMenuItem>
                         </DropdownMenuContent>

@@ -34,10 +34,10 @@ interface TenantSettings {
 }
 
 const SETTINGS_TABS = [
-  { value: "template", label: "Modele" },
+  { value: "template", label: "Modèle" },
   { value: "company", label: "Entreprise" },
   { value: "legal", label: "Mentions" },
-  { value: "numbering", label: "Numerotation" },
+  { value: "numbering", label: "Numérotation" },
   { value: "bank", label: "Banque" },
   { value: "emails", label: "Emails" },
 ];
@@ -361,7 +361,7 @@ export default function SettingsPage() {
         <h1 className="text-2xl font-bold">Parametres</h1>
         <p className="text-muted-foreground text-sm mt-1">Configurez votre espace de facturation</p>
         {saving && <p className="text-sm text-violet-600 mt-1">Enregistrement...</p>}
-        {saved && <p className="text-sm text-emerald-600 mt-1">Enregistre avec succes</p>}
+        {saved && <p className="text-sm text-emerald-600 mt-1">Enregistré avec succès</p>}
       </div>
 
       <Tabs value={activeTab} onValueChange={(v) => v && setActiveTab(v)} className="animate-fade-in-up stagger-1">

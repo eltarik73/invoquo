@@ -13,14 +13,14 @@ interface PaStatus {
 }
 
 const CHECKLIST = [
-  { label: "Numerotation sequentielle sans rupture", ok: true },
+  { label: "Numérotation sequentielle sans rupture", ok: true },
   { label: "Mentions obligatoires sur chaque facture", ok: true },
   { label: "Format Factur-X pour toutes les emissions", ok: true },
   { label: "SIREN client renseigne (B2B France)", ok: true },
   { label: "Categorie d'operation sur chaque facture", ok: true },
   { label: "Archivage PDF securise (7 ans)", ok: true },
-  { label: "Penalites de retard mentionnees", ok: true },
-  { label: "Indemnite forfaitaire de recouvrement 40 EUR", ok: true },
+  { label: "Pénalités de retard mentionnées", ok: true },
+  { label: "Indemnité forfaitaire de recouvrement 40 EUR", ok: true },
 ];
 
 export default function CompliancePage() {
@@ -64,7 +64,7 @@ export default function CompliancePage() {
             <p className={`text-sm font-medium ${paConnected ? "text-emerald-800" : "text-amber-800"}`}>
               {paConnected
                 ? "Toutes vos factures sont conformes a la reforme de la facturation electronique."
-                : "Connectez-vous a une Plateforme Agreee pour etre conforme a la reforme."}
+                : "Connectez-vous a une Plateforme Agréée pour etre conforme à la réforme."}
             </p>
           </div>
           {!paConnected && (
@@ -85,9 +85,9 @@ export default function CompliancePage() {
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h2 className="font-semibold">Plateforme Agreee</h2>
+                  <h2 className="font-semibold">Plateforme Agréée</h2>
                   <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${paConnected ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"}`}>
-                    {paConnected ? "Connectee" : "Deconnectee"}
+                    {paConnected ? "Connectée" : "Déconnectée"}
                   </span>
                 </div>
                 <p className="text-sm text-muted-foreground mt-0.5">
@@ -95,7 +95,7 @@ export default function CompliancePage() {
                 </p>
                 {paStatus?.lastSync && (
                   <p className="text-xs text-muted-foreground mt-1">
-                    Derniere synchronisation : {new Intl.DateTimeFormat("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }).format(new Date(paStatus.lastSync))}
+                    Dernière synchronisation : {new Intl.DateTimeFormat("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }).format(new Date(paStatus.lastSync))}
                   </p>
                 )}
               </div>
@@ -125,12 +125,12 @@ export default function CompliancePage() {
           <CardContent className="pt-6">
             <p className="text-sm text-muted-foreground">E-reporting</p>
             <p className="text-3xl font-bold font-mono mt-1">{stats.eReporting}</p>
-            <p className="text-xs text-muted-foreground mt-1">declarations B2C</p>
+            <p className="text-xs text-muted-foreground mt-1">déclarations B2C</p>
           </CardContent>
         </Card>
         <Card className="animate-fade-in-up stagger-5">
           <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground">Rejets corriges</p>
+            <p className="text-sm text-muted-foreground">Rejets corrigés</p>
             <p className="text-3xl font-bold font-mono mt-1">{stats.rejected}</p>
           </CardContent>
         </Card>
@@ -139,7 +139,7 @@ export default function CompliancePage() {
       {/* Checklist */}
       <Card className="animate-fade-in-up stagger-5">
         <CardHeader>
-          <CardTitle className="text-base">Checklist de conformite</CardTitle>
+          <CardTitle className="text-base">Checklist de conformité</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
@@ -166,7 +166,7 @@ export default function CompliancePage() {
                   </svg>
                 )}
               </div>
-              <span className="text-sm">Transmission via Plateforme Agreee</span>
+              <span className="text-sm">Transmission via Plateforme Agréée</span>
             </div>
           </div>
         </CardContent>
@@ -182,14 +182,14 @@ export default function CompliancePage() {
               </svg>
             </div>
             <div>
-              <h3 className="font-semibold">Securisation et archivage de vos donnees</h3>
+              <h3 className="font-semibold">Sécurisation et archivage de vos donnees</h3>
               <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-                Invoquo securise et archive vos donnees de facturation conformement a la reglementation.
+                Invoquo sécurise et archive vos donnees de facturation conformément à la réglementation.
                 Vos factures sont protegees par un systeme de signature cryptographique et conservees
                 pendant la duree legale.
               </p>
               <p className="text-sm text-muted-foreground mt-2">
-                <span className="font-medium text-violet-700">Attestation de conformite</span> — bientot disponible.
+                <span className="font-medium text-violet-700">Attestation de conformité</span> — bientôt disponible.
               </p>
               <p className="text-sm text-violet-700 font-medium mt-3">
                 Vous n&apos;avez rien a faire, on s&apos;occupe de tout.

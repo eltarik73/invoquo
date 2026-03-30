@@ -62,12 +62,12 @@ const PERIODS = [
 ];
 
 const STATUS_LABELS: Record<string, string> = {
-  paid: "Payees",
+  paid: "Payées",
   transmitted: "Transmises",
   sent: "Envoyees",
   pending: "En attente",
   overdue: "En retard",
-  rejected: "Rejetees",
+  rejected: "Rejetées",
   draft: "Brouillons",
 };
 
@@ -239,26 +239,26 @@ export default function ReportingPage() {
           <CardContent className="pt-6">
             <p className="text-sm text-muted-foreground">CA du mois (HT)</p>
             <p className="text-3xl font-bold font-mono mt-1">{formatCurrency(r.totalHT)}</p>
-            <ComparisonBadge current={r.totalHT} previous={r.previousTotalHT} suffix=" vs mois prec." />
+            <ComparisonBadge current={r.totalHT} previous={r.previousTotalHT} suffix=" vs mois préc." />
           </CardContent>
         </Card>
         <Card className="animate-fade-in-up stagger-2">
           <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground">Factures emises</p>
+            <p className="text-sm text-muted-foreground">Factures émises</p>
             <p className="text-3xl font-bold font-mono mt-1">{r.invoiceCount}</p>
-            <ComparisonBadge current={r.invoiceCount} previous={r.previousInvoiceCount} suffix=" vs mois prec." />
+            <ComparisonBadge current={r.invoiceCount} previous={r.previousInvoiceCount} suffix=" vs mois préc." />
           </CardContent>
         </Card>
         <Card className="animate-fade-in-up stagger-3">
           <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground">Encaisse</p>
+            <p className="text-sm text-muted-foreground">Encaissé</p>
             <p className="text-3xl font-bold font-mono mt-1">{formatCurrency(r.paidAmount)}</p>
             <span className="text-xs text-muted-foreground">{paidPct}% du CA</span>
           </CardContent>
         </Card>
         <Card className="animate-fade-in-up stagger-4">
           <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground">Impayes</p>
+            <p className="text-sm text-muted-foreground">Impayés</p>
             <p className="text-3xl font-bold font-mono mt-1 text-red-600">{formatCurrency(r.overdueAmount)}</p>
             <span className="text-xs text-red-600">{r.overdueCount} facture{r.overdueCount > 1 ? "s" : ""}</span>
           </CardContent>
@@ -275,7 +275,7 @@ export default function ReportingPage() {
 
         {/* Donut statuts */}
         <Card className="animate-fade-in-up stagger-5">
-          <CardHeader><CardTitle className="text-base">Repartition par statut</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base">Répartition par statut</CardTitle></CardHeader>
           <CardContent><DonutChart data={r.statuses} /></CardContent>
         </Card>
 
@@ -284,7 +284,7 @@ export default function ReportingPage() {
           <CardHeader><CardTitle className="text-base">Top 5 clients</CardTitle></CardHeader>
           <CardContent>
             {r.topClients.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-6 text-center">Aucune donnee pour cette periode</p>
+              <p className="text-sm text-muted-foreground py-6 text-center">Aucune donnée pour cette période</p>
             ) : (
               <div className="space-y-4">
                 {r.topClients.map((c, i) => {

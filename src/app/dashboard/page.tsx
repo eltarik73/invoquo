@@ -73,28 +73,28 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="animate-fade-in-up stagger-1">
           <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground">Factures emises</p>
+            <p className="text-sm text-muted-foreground">Factures émises</p>
             <p className="text-3xl font-bold font-mono mt-1">{totalInvoices}</p>
           </CardContent>
         </Card>
         <Card className="animate-fade-in-up stagger-2">
           <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground">Factures recues</p>
+            <p className="text-sm text-muted-foreground">Factures reçues</p>
             <p className="text-3xl font-bold font-mono mt-1">{totalReceived}</p>
           </CardContent>
         </Card>
         <Card className="animate-fade-in-up stagger-3">
           <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground">Plateforme Agreee</p>
+            <p className="text-sm text-muted-foreground">Plateforme Agréée</p>
             <div className="flex items-center gap-2 mt-1">
               <div className={`w-2.5 h-2.5 rounded-full ${paStatus?.connected ? "bg-emerald-500" : "bg-gray-300"}`} />
               <span className="text-sm font-medium">
-                {paStatus?.connected ? "Connectee" : "Non connectee"}
+                {paStatus?.connected ? "Connectée" : "Non connectée"}
               </span>
             </div>
             {paStatus?.lastSync && (
               <p className="text-xs text-muted-foreground mt-1">
-                Derniere synchro : {formatDate(paStatus.lastSync)}
+                Dernière synchro : {formatDate(paStatus.lastSync)}
               </p>
             )}
           </CardContent>
@@ -117,7 +117,7 @@ export default function DashboardPage() {
         {/* Last emitted invoices */}
         <Card className="animate-fade-in-up stagger-5">
           <CardHeader className="flex flex-row items-center justify-between pb-3">
-            <CardTitle className="text-base">Dernieres factures</CardTitle>
+            <CardTitle className="text-base">Dernières factures</CardTitle>
             <Link href="/dashboard/invoices" className="text-sm text-primary hover:underline">
               Voir tout
             </Link>
@@ -159,7 +159,7 @@ export default function DashboardPage() {
         {/* Last received invoices */}
         <Card className="animate-fade-in-up stagger-6">
           <CardHeader className="flex flex-row items-center justify-between pb-3">
-            <CardTitle className="text-base">Factures recues (PA)</CardTitle>
+            <CardTitle className="text-base">Factures reçues (PA)</CardTitle>
             <Link href="/dashboard/received" className="text-sm text-primary hover:underline">
               Voir tout
             </Link>
@@ -170,7 +170,7 @@ export default function DashboardPage() {
                 <p className="text-sm text-muted-foreground">
                   {paStatus?.connected
                     ? "Aucune facture recue pour le moment"
-                    : "Connectez votre Plateforme Agreee pour recevoir vos factures"}
+                    : "Connectez votre Plateforme Agréée pour recevoir vos factures"}
                 </p>
                 {!paStatus?.connected && (
                   <Link href="/dashboard/settings">

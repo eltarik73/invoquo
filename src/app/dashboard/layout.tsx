@@ -27,7 +27,7 @@ const NAV_ITEMS = [
     ),
   },
   {
-    label: "Recues",
+    label: "Reçues",
     href: "/dashboard/received",
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
@@ -73,7 +73,7 @@ const NAV_ITEMS = [
   },
   "separator",
   {
-    label: "Conformite",
+    label: "Conformité",
     href: "/dashboard/compliance",
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
@@ -82,7 +82,7 @@ const NAV_ITEMS = [
     ),
   },
   {
-    label: "Parametres",
+    label: "Paramètres",
     href: "/dashboard/settings",
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>

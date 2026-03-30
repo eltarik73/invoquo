@@ -304,7 +304,7 @@ export default function ClientsPage() {
               ) : !data?.data?.length ? (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center py-12 text-muted-foreground">
-                    Aucun client trouve
+                    Aucun client trouvé
                   </TableCell>
                 </TableRow>
               ) : (

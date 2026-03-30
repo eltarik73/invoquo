@@ -21,8 +21,8 @@ import { useApi } from "@/hooks/use-api";
 const STATUS_TABS = [
   { value: "all", label: "Toutes" },
   { value: "pending", label: "A traiter" },
-  { value: "validated", label: "Validees" },
-  { value: "rejected", label: "Rejetees" },
+  { value: "validated", label: "Validées" },
+  { value: "rejected", label: "Rejetées" },
 ];
 
 interface ReceivedInvoice {
@@ -59,9 +59,9 @@ export default function ReceivedPage() {
   return (
     <div className="space-y-6">
       <div className="animate-fade-in-up">
-        <h1 className="text-2xl font-bold">Factures recues</h1>
+        <h1 className="text-2xl font-bold">Factures reçues</h1>
         <p className="text-muted-foreground text-sm mt-1">
-          Factures transmises par vos fournisseurs via la Plateforme Agreee
+          Factures transmises par vos fournisseurs via la Plateforme Agréée
         </p>
       </div>
 
@@ -90,9 +90,9 @@ export default function ReceivedPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Fournisseur</TableHead>
-                <TableHead className="hidden sm:table-cell">Numero</TableHead>
+                <TableHead className="hidden sm:table-cell">Numéro</TableHead>
                 <TableHead className="hidden md:table-cell">Date</TableHead>
-                <TableHead className="hidden md:table-cell">Echeance</TableHead>
+                <TableHead className="hidden md:table-cell">Échéance</TableHead>
                 <TableHead>Statut</TableHead>
                 <TableHead className="text-right">Montant TTC</TableHead>
               </TableRow>

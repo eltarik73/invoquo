@@ -44,7 +44,7 @@ const EXPORT_FORMATS = [
   {
     type: "fec",
     title: "FEC (Fichier des Ecritures Comptables)",
-    description: "Format obligatoire pour la presentation de la comptabilite informatisee lors d'un controle fiscal.",
+    description: "Format obligatoire pour la presentation de la comptabilité informatisee lors d'un controle fiscal.",
     bgColor: "bg-violet-50",
     iconColor: "text-violet-500",
     icon: (
@@ -52,7 +52,7 @@ const EXPORT_FORMATS = [
         <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
       </svg>
     ),
-    button: "Generer le FEC",
+    button: "Générer le FEC",
   },
   {
     type: "csv",
@@ -65,7 +65,7 @@ const EXPORT_FORMATS = [
         <path strokeLinecap="round" strokeLinejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0112 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125m17.25-3.75h-7.5c-.621 0-1.125.504-1.125 1.125m8.625-1.125c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125M12 10.875v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 10.875c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125M13.125 12h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125M20.625 12c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5M12 14.625v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 14.625c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125m0 0v.75" />
       </svg>
     ),
-    button: "Telecharger CSV",
+    button: "Télécharger CSV",
   },
   {
     type: "pdf_report",
@@ -78,12 +78,12 @@ const EXPORT_FORMATS = [
         <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
       </svg>
     ),
-    button: "Generer PDF",
+    button: "Générer PDF",
   },
   {
     type: "facturx_archive",
     title: "Archive Factur-X",
-    description: "Telecharger toutes les factures emises et recues au format Factur-X (PDF+XML).",
+    description: "Télécharger toutes les factures emises et recues au format Factur-X (PDF+XML).",
     bgColor: "bg-amber-50",
     iconColor: "text-amber-500",
     icon: (
@@ -91,7 +91,7 @@ const EXPORT_FORMATS = [
         <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
       </svg>
     ),
-    button: "Telecharger ZIP",
+    button: "Télécharger ZIP",
   },
 ];
 
@@ -139,7 +139,7 @@ export default function ExportPage() {
       <div className="animate-fade-in-up">
         <h1 className="text-2xl font-bold">Export comptable</h1>
         <p className="text-muted-foreground text-sm mt-1">
-          Exportez vos donnees de facturation pour votre comptabilite
+          Exportez vos données de facturation pour votre comptabilité
         </p>
       </div>
 
@@ -147,7 +147,7 @@ export default function ExportPage() {
       <Card className="animate-fade-in-up stagger-1">
         <CardContent className="pt-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-            <span className="text-sm font-medium shrink-0">Periode :</span>
+            <span className="text-sm font-medium shrink-0">Période :</span>
             <div className="flex items-center gap-2">
               <Input type="date" value={periodStart} onChange={(e) => setPeriodStart(e.target.value)} className="w-40" />
               <span className="text-muted-foreground text-sm">au</span>
@@ -179,7 +179,7 @@ export default function ExportPage() {
                   <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{format.description}</p>
                   <span className="inline-flex items-center gap-1.5 mt-3 text-xs font-medium text-primary">
                     {generating === format.type ? (
-                      "Generation en cours..."
+                      "Génération en cours..."
                     ) : (
                       <>
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
@@ -206,7 +206,7 @@ export default function ExportPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Export</TableHead>
-                <TableHead className="hidden sm:table-cell">Periode</TableHead>
+                <TableHead className="hidden sm:table-cell">Période</TableHead>
                 <TableHead>Format</TableHead>
                 <TableHead className="hidden md:table-cell">Date</TableHead>
                 <TableHead className="w-10" />
@@ -216,7 +216,7 @@ export default function ExportPage() {
               {historyData.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center py-12 text-muted-foreground">
-                    Aucun export genere pour le moment
+                    Aucun export généré pour le moment
                   </TableCell>
                 </TableRow>
               ) : (
