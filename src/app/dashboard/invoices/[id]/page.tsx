@@ -97,9 +97,10 @@ export default function InvoiceDetailPage() {
   const router = useRouter();
   const id = pathname.split("/").pop();
 
-  const { data: invoice, loading, error, refetch } = useApi<Invoice>(
+  const { data: invoiceData, loading, error, refetch } = useApi<{ invoice: Invoice }>(
     id ? `/api/invoices/${id}` : null
   );
+  const invoice = invoiceData?.invoice ?? null;
 
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 

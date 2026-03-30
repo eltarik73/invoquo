@@ -80,9 +80,10 @@ export default function ClientDetailPage() {
   const router = useRouter();
   const id = pathname.split("/").pop();
 
-  const { data: client, loading, error } = useApi<Client>(
+  const { data: clientData, loading, error } = useApi<{ client: Client }>(
     id ? `/api/clients/${id}` : null
   );
+  const client = clientData?.client ?? null;
 
   const [actionLoading, setActionLoading] = useState(false);
 
