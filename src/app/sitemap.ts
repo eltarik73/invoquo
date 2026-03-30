@@ -4,6 +4,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://invoquo.vercel.app";
   const now = new Date();
 
+  const artisans = [
+    "plombier", "electricien", "peintre", "macon",
+    "menuisier", "couvreur", "chauffagiste", "carreleur",
+  ];
+
   return [
     // Core pages
     { url: baseUrl, lastModified: now, changeFrequency: "weekly", priority: 1 },
@@ -24,11 +29,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/guide/choisir-plateforme-agreee`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${baseUrl}/guide/e-reporting-tva`, lastModified: now, changeFrequency: "monthly", priority: 0.75 },
 
-    // Metiers (long tail)
-    { url: `${baseUrl}/metiers/plombier`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
-    { url: `${baseUrl}/metiers/electricien`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
-    { url: `${baseUrl}/metiers/macon`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
-    { url: `${baseUrl}/metiers/menuisier`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
-    { url: `${baseUrl}/metiers/peintre`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    // Metiers (8 artisans)
+    ...artisans.map((m) => ({
+      url: `${baseUrl}/metiers/${m}`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    })),
   ];
 }

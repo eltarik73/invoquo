@@ -5,9 +5,9 @@ import { Nav } from "@/components/landing/nav";
 import { Countdown } from "@/components/landing/countdown";
 
 export const metadata: Metadata = {
-  title: "Invoquo — Facturation electronique conforme 2026 | Artisans, TPE, Auto-entrepreneurs",
+  title: "Invoquo — Facturation Electronique Conforme 2026 | Plateforme Agreee",
   description:
-    "Logiciel de facturation electronique conforme a la reforme du 1er septembre 2026. Connecte a une Plateforme Agreee certifiee. Factur-X, devis, e-reporting. 1 mois gratuit sans CB.",
+    "Logiciel de facturation electronique connecte a une Plateforme Agreee DGFiP. Recevez et emettez vos factures conformes sept. 2026. TPE, artisans, auto-entrepreneurs. 1 mois gratuit.",
   alternates: { canonical: "https://invoquo.vercel.app" },
 };
 
@@ -78,19 +78,93 @@ export default function LandingPage() {
           </div>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 tracking-tight">
             Facturation electronique{" "}
-            <span className="text-violet-600">conforme</span>{" "}
-            pour artisans et TPE
+            <span className="text-violet-600">conforme</span>.{" "}
+            Connecte <span className="text-violet-600">Plateforme Agreee</span>.
           </h1>
           <p className="mt-6 text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            Le logiciel de facturation electronique simple et conforme a la reforme 2026.
-            Connecte a une Plateforme Agreee certifiee par l&apos;Etat.
-            Pour les artisans, auto-entrepreneurs et TPE.
+            Recevez et emettez vos factures conformes a la reforme DGFiP.
+            Pour les TPE, artisans et auto-entrepreneurs. Sans prise de tete.
           </p>
+          {/* PA Badge — gros et visible */}
+          <div className="mt-6 inline-flex items-center gap-2 bg-emerald-50 text-emerald-800 text-sm font-semibold px-5 py-2.5 rounded-full border border-emerald-200">
+            <svg className="w-5 h-5 text-emerald-600" fill="currentColor" viewBox="0 0 24 24"><path fillRule="evenodd" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" clipRule="evenodd" /></svg>
+            Connecte Plateforme Agreee DGFiP
+          </div>
           <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
             <Link href="/signup"><Button size="lg" className="text-base px-8">Essayer gratuitement</Button></Link>
             <Link href="#tarifs"><Button size="lg" variant="outline" className="text-base px-8">Voir les tarifs</Button></Link>
           </div>
           <p className="mt-4 text-sm text-gray-500">1 mois gratuit · Sans carte bancaire · Sans engagement</p>
+        </div>
+      </section>
+
+      {/* Urgence */}
+      <section className="py-12 px-4 bg-red-50 border-y border-red-100" aria-label="Obligation legale">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-2xl font-bold text-gray-900">Septembre 2026 : la facturation change pour tout le monde</h2>
+          <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
+            <div className="bg-white rounded-lg p-4 border border-red-100">
+              <p className="text-2xl font-bold font-mono text-red-600">100%</p>
+              <p className="text-xs text-gray-600 mt-1">des entreprises doivent recevoir des factures electroniques</p>
+            </div>
+            <div className="bg-white rounded-lg p-4 border border-red-100">
+              <p className="text-2xl font-bold font-mono text-red-600">15 EUR</p>
+              <p className="text-xs text-gray-600 mt-1">d&apos;amende par facture non conforme</p>
+            </div>
+            <div className="bg-white rounded-lg p-4 border border-red-100">
+              <p className="text-2xl font-bold font-mono text-red-600">PDF</p>
+              <p className="text-xs text-gray-600 mt-1">par email ne suffit plus — il faut du Factur-X via PA</p>
+            </div>
+          </div>
+          <p className="mt-4 text-sm text-gray-600">
+            <Link href="/facturation-electronique-2026" className="text-violet-600 font-medium hover:underline">
+              Comprendre la reforme en 5 minutes →
+            </Link>
+          </p>
+        </div>
+      </section>
+
+      {/* Comment ca marche */}
+      <section className="py-20 px-4" aria-label="Comment ca marche">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl font-bold text-gray-900">3 etapes, 5 minutes, c&apos;est regle</h2>
+          <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-8">
+            {[
+              { step: "1", title: "Creez votre compte", desc: "Entrez votre SIRET — les informations de votre entreprise sont remplies automatiquement via Pappers." },
+              { step: "2", title: "Connectez votre PA", desc: "En 3 clics, votre espace de reception est active via la Plateforme Agreee certifiee." },
+              { step: "3", title: "Vous etes en regle", desc: "Recevez vos premieres factures electroniques. Creez des devis et factures conformes." },
+            ].map((s) => (
+              <div key={s.step} className="text-center">
+                <div className="w-12 h-12 rounded-full bg-violet-600 text-white text-xl font-bold flex items-center justify-center mx-auto">{s.step}</div>
+                <h3 className="font-semibold text-gray-900 mt-4">{s.title}</h3>
+                <p className="text-sm text-gray-600 mt-2">{s.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Plateforme Agreee — section dediee */}
+      <section className="py-20 px-4 bg-violet-50" aria-label="Plateforme Agreee">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl font-bold text-gray-900">Vos factures passent par une Plateforme Agreee de l&apos;Etat</h2>
+          <p className="text-gray-600 mt-3 max-w-xl mx-auto">
+            Invoquo est connecte a une PA officiellement immatriculee par la DGFiP.
+            Vos factures sont transmises sur le reseau officiel. Pas un bricolage.
+          </p>
+          <div className="mt-8 flex flex-wrap justify-center gap-4">
+            {["Plateforme Agreee DGFiP", "Format Factur-X", "Norme EN 16931", "Reseau Peppol", "E-invoicing + E-reporting"].map((badge) => (
+              <div key={badge} className="flex items-center gap-2 bg-white rounded-full px-4 py-2 border border-violet-200 text-sm font-medium text-violet-800">
+                <svg className="w-4 h-4 text-emerald-500" fill="currentColor" viewBox="0 0 24 24"><path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clipRule="evenodd" /></svg>
+                {badge}
+              </div>
+            ))}
+          </div>
+          <p className="mt-6">
+            <Link href="/plateforme-agreee" className="text-sm text-violet-600 font-medium hover:underline">
+              En savoir plus sur les Plateformes Agreees →
+            </Link>
+          </p>
         </div>
       </section>
 
@@ -113,8 +187,35 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Artisans */}
+      <section className="py-20 px-4" aria-label="Pour les artisans">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl font-bold text-gray-900">Pense pour les artisans. Adapte a tous.</h2>
+          <p className="text-gray-600 mt-3">Plombier, electricien, peintre, macon, menuisier, couvreur, chauffagiste... et aussi freelances, consultants, commercants.</p>
+          <div className="mt-8 flex flex-wrap justify-center gap-2">
+            {[
+              { name: "Plombier", href: "/metiers/plombier" },
+              { name: "Electricien", href: "/metiers/electricien" },
+              { name: "Peintre", href: "/metiers/peintre" },
+              { name: "Macon", href: "/metiers/macon" },
+              { name: "Menuisier", href: "/metiers/menuisier" },
+              { name: "Couvreur", href: "/metiers/couvreur" },
+              { name: "Chauffagiste", href: "/metiers/chauffagiste" },
+              { name: "Carreleur", href: "/metiers/carreleur" },
+            ].map((m) => (
+              <Link key={m.name} href={m.href} className="px-4 py-2 rounded-full border border-gray-200 text-sm text-gray-700 hover:border-violet-300 hover:bg-violet-50 hover:text-violet-700 transition-colors">
+                {m.name}
+              </Link>
+            ))}
+          </div>
+          <p className="mt-6 text-sm text-gray-500">
+            <Link href="/logiciel-facturation-artisan" className="text-violet-600 font-medium hover:underline">Decouvrir Invoquo pour les artisans →</Link>
+          </p>
+        </div>
+      </section>
+
       {/* Pricing */}
-      <section id="tarifs" className="py-20 px-4" aria-label="Tarifs">
+      <section id="tarifs" className="py-20 px-4 bg-gray-50" aria-label="Tarifs">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold text-center text-gray-900">Tarifs simples et transparents</h2>
           <p className="text-gray-600 text-center mt-3">1 mois gratuit sur tous les plans. Sans engagement, sans carte bancaire.</p>

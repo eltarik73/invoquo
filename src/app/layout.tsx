@@ -17,11 +17,11 @@ const dmMono = DM_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://invoquo.vercel.app"),
   title: {
-    default: "Invoquo — Facturation electronique conforme 2026 pour artisans et TPE",
-    template: "%s | Invoquo",
+    default: "Invoquo — Facturation Electronique Conforme 2026 | Plateforme Agreee",
+    template: "%s | Invoquo — Facturation Electronique",
   },
   description:
-    "Logiciel de facturation electronique conforme a la reforme septembre 2026. Plateforme Agreee, Factur-X, devis, factures, e-reporting. 1 mois gratuit pour artisans, auto-entrepreneurs et TPE.",
+    "Logiciel de facturation electronique connecte Plateforme Agreee DGFiP. Recevez et emettez vos factures conformes sept. 2026. TPE, artisans, auto-entrepreneurs. 1 mois gratuit.",
   keywords: [
     "facturation electronique",
     "facturation electronique obligatoire 2026",
@@ -41,6 +41,14 @@ export const metadata: Metadata = {
     "logiciel facturation gratuit",
     "devis facture artisan",
     "plateforme de dematerialisation partenaire",
+    "logiciel facturation conforme DGFiP",
+    "logiciel facturation plombier",
+    "logiciel facturation electricien",
+    "e-invoicing France",
+    "facturation electronique micro entreprise",
+    "logiciel facturation conforme 2026",
+    "recevoir factures electroniques",
+    "sanctions facturation electronique",
   ],
   authors: [{ name: "Invoquo" }],
   creator: "Invoquo",
@@ -49,9 +57,9 @@ export const metadata: Metadata = {
     type: "website",
     locale: "fr_FR",
     siteName: "Invoquo",
-    title: "Invoquo — Facturation electronique conforme 2026",
+    title: "Invoquo — Facturation Electronique Conforme 2026 | Plateforme Agreee",
     description:
-      "Factures conformes a la reforme 2026. Plateforme Agreee, Factur-X, devis et e-reporting. Simple, conforme, pour artisans et TPE.",
+      "Connecte Plateforme Agreee DGFiP. Recevez vos factures electroniques conformes. 1 mois gratuit pour TPE et artisans.",
     images: [
       {
         url: "/og-image.png",
