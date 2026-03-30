@@ -34,6 +34,7 @@ interface TenantSettings {
 }
 
 const SETTINGS_TABS = [
+  { value: "plan", label: "Abonnement" },
   { value: "template", label: "Modèle" },
   { value: "company", label: "Entreprise" },
   { value: "legal", label: "Mentions" },
@@ -341,9 +342,114 @@ function EmailsTab({ s, onSave }: { s: TenantSettings; onSave: (d: Record<string
   );
 }
 
+// === Plan Tab ===
+function PlanTab() {
+  const { data: tenant } = useApi<{ plan: string; trialEndsAt: string | null; stripeSubId: string | null; planSource: string }>("/api/settings");
+  const [loading, setLoading] = useState<string | null>(null);
+
+  const currentPlan = tenant?.plan || "essentiel";
+  const trialEndsAt = tenant?.trialEndsAt ? new Date(tenant.trialEndsAt) : null;
+  const isTrial = trialEndsAt && trialEndsAt > new Date();
+  const trialDaysLeft = isTrial ? Math.ceil((trialEndsAt.getTime() - Date.now()) / 86400000) : 0;
+  const isBativio = tenant?.planSource === "bativio" || tenant?.planSource === "klikgo";
+
+  async function handleCheckout(plan: string) {
+    setLoading(plan);
+    try {
+      const res = await apiFetch<{ url: string }>("/api/stripe/checkout", { method: "POST", body: JSON.stringify({ plan }) });
+      if (res.url) window.location.href = res.url;
+    } catch { /* handled */ }
+    finally { setLoading(null); }
+  }
+
+  async function handlePortal() {
+    setLoading("portal");
+    try {
+      const res = await apiFetch<{ url: string }>("/api/stripe/portal", { method: "POST" });
+      if (res.url) window.location.href = res.url;
+    } catch { /* handled */ }
+    finally { setLoading(null); }
+  }
+
+  const plans = [
+    { id: "essentiel", label: "Essentiel", price: "19", features: ["Réception PA illimitée", "Dashboard de suivi", "Notifications email", "Export basique"] },
+    { id: "standard", label: "Standard", price: "29", features: ["Tout l'Essentiel", "Émission PA illimitée", "Import Factur-X", "E-reporting automatique", "Suivi statuts PA"] },
+    { id: "pro", label: "Pro", price: "39", features: ["Tout le Standard", "Création factures et devis", "5 templates personnalisables", "Export FEC, CSV, PDF", "Reporting", "Relances auto"] },
+  ];
+
+  return (
+    <div className="space-y-6 max-w-3xl">
+      {/* Current plan banner */}
+      <Card>
+        <CardContent className="pt-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="font-bold text-lg">{plans.find((p) => p.id === currentPlan)?.label || "Essentiel"}</h3>
+                <span className="text-xs font-bold bg-violet-100 text-violet-700 px-2 py-0.5 rounded-full">Plan actuel</span>
+                {isTrial && <span className="text-xs font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">Essai gratuit — {trialDaysLeft}j restants</span>}
+              </div>
+              <p className="text-sm text-muted-foreground mt-1">
+                {isTrial ? "Accès complet pendant votre période d'essai" : `${plans.find((p) => p.id === currentPlan)?.price || "19"} €/mois HT`}
+              </p>
+            </div>
+            {tenant?.stripeSubId && (
+              <Button variant="outline" size="sm" onClick={handlePortal} disabled={loading === "portal"}>
+                {loading === "portal" ? "Chargement..." : "Gérer mon abonnement"}
+              </Button>
+            )}
+          </div>
+          {isBativio && (
+            <p className="text-xs text-muted-foreground mt-3 bg-muted rounded-lg px-3 py-2">
+              Votre abonnement est géré par {tenant?.planSource === "bativio" ? "Bativio" : "Klik&Go"}. Contactez votre prestataire pour changer de plan.
+            </p>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Plan cards */}
+      {!isBativio && (
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {plans.map((plan) => {
+            const isCurrent = plan.id === currentPlan;
+            const isPopular = plan.id === "standard";
+            return (
+              <div key={plan.id} className={`rounded-2xl border p-6 flex flex-col ${isPopular ? "border-violet-500 ring-2 ring-violet-200 relative" : "border-gray-200"}`}>
+                {isPopular && <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-violet-600 text-white text-[10px] font-bold px-3 py-0.5 rounded-full">Populaire</div>}
+                <h4 className="font-bold text-gray-900">{plan.label}</h4>
+                <div className="mt-2 flex items-baseline gap-0.5">
+                  <span className="text-3xl font-bold font-mono">{plan.price}</span>
+                  <span className="text-gray-500 text-sm"> €/mois HT</span>
+                </div>
+                <ul className="mt-4 space-y-2 flex-1">
+                  {plan.features.map((f) => (
+                    <li key={f} className="flex items-center gap-2 text-sm text-gray-600">
+                      <svg className="w-4 h-4 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clipRule="evenodd" /></svg>
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-5">
+                  {isCurrent ? (
+                    <Button variant="outline" className="w-full" disabled>Plan actuel</Button>
+                  ) : (
+                    <Button className="w-full" variant={isPopular ? "default" : "outline"} disabled={loading === plan.id} onClick={() => handleCheckout(plan.id)}>
+                      {loading === plan.id ? "Redirection..." : `Passer au ${plan.label}`}
+                    </Button>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // === Main ===
 export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState("template");
+  const [activeTab, setActiveTab] = useState("plan");
   const { data: settings, refetch } = useApi<TenantSettings>("/api/settings");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -371,6 +477,7 @@ export default function SettingsPage() {
       </Tabs>
 
       <div className="animate-fade-in-up stagger-2">
+        {activeTab === "plan" && <PlanTab />}
         {activeTab === "template" && <TemplateTab s={s} onSave={handleSave} />}
         {activeTab === "company" && <CompanyTab s={s} onSave={handleSave} />}
         {activeTab === "legal" && <LegalTab s={s} onSave={handleSave} />}

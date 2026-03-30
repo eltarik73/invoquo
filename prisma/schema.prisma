@@ -115,8 +115,15 @@ model Tenant {
   isMemberAssociation  Boolean @default(false)
   isVatExempt          Boolean @default(false) // art. 293 B
 
+  // Stripe / Plan
+  plan              String    @default("essentiel") // essentiel, standard, pro
+  planSource        String    @default("direct") // direct, bativio, klikgo
+  stripeCustomerId  String?   @unique
+  stripeSubId       String?
+  trialEndsAt       DateTime?
+
   // Embed
-  apiKey          String?   @unique // pour les apps hôtes
+  apiKey          String?   @unique
   apiKeyCreatedAt DateTime?
 
   // Relations

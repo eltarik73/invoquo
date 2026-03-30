@@ -64,6 +64,9 @@ export async function POST(req: NextRequest) {
           apeCode: pappersData.apeCode,
           apiKey: `inv_${randomUUID().replace(/-/g, "")}`,
           apiKeyCreatedAt: new Date(),
+          plan: "essentiel",
+          planSource: "direct",
+          trialEndsAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
         },
       });
 

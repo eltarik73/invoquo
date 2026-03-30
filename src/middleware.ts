@@ -12,6 +12,7 @@ const PUBLIC_ROUTES = [
   "/api/pa/callback",
   "/api/webhooks",
   "/api/lookup",
+  "/api/stripe/webhook",
 ];
 
 export async function middleware(req: NextRequest) {
