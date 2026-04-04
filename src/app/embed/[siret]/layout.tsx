@@ -10,7 +10,7 @@ export default async function EmbedLayout({ children, params }: Props) {
     <div className="embed-wrapper min-h-screen bg-gray-50" data-siret={siret}>
       <div className="p-4">{children}</div>
       <div className="text-center text-xs text-gray-400 py-2">
-        Facturation par Invoquo
+        Facturation &eacute;lectronique
       </div>
     </div>
   );
