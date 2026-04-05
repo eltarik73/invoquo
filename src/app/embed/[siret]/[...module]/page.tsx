@@ -457,7 +457,7 @@ function EmbedInvoiceList({ accent, invoices, siret, token }: { accent: string; 
       ) : (
         <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
           {/* Table header */}
-          <div className="hidden sm:grid sm:grid-cols-[1fr_1.2fr_auto_auto_auto] gap-3 px-4 py-2.5 bg-gray-50 border-b border-gray-200 text-[11px] font-medium text-gray-500 uppercase tracking-wide">
+          <div className="hidden sm:grid sm:grid-cols-[1fr_1.2fr_auto_auto_auto] gap-3 px-4 py-2.5 border-b text-[11px] font-medium text-gray-500 uppercase tracking-wide">
             <span>N°</span>
             <span>Client</span>
             <span>Date</span>
@@ -535,7 +535,7 @@ function EmbedQuoteList({ accent, quotes, siret, token }: { accent: string; quot
       ) : (
         <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
           {/* Table header */}
-          <div className="hidden sm:grid sm:grid-cols-[1fr_1.2fr_auto_auto_auto] gap-3 px-4 py-2.5 bg-gray-50 border-b border-gray-200 text-[11px] font-medium text-gray-500 uppercase tracking-wide">
+          <div className="hidden sm:grid sm:grid-cols-[1fr_1.2fr_auto_auto_auto] gap-3 px-4 py-2.5 border-b text-[11px] font-medium text-gray-500 uppercase tracking-wide">
             <span>N°</span>
             <span>Client</span>
             <span>Date</span>
@@ -613,7 +613,7 @@ function EmbedClientList({ accent, clients, siret, token }: { accent: string; cl
       ) : (
         <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
           {/* Table header */}
-          <div className="hidden sm:grid sm:grid-cols-[1.5fr_1fr_auto_auto] gap-3 px-4 py-2.5 bg-gray-50 border-b border-gray-200 text-[11px] font-medium text-gray-500 uppercase tracking-wide">
+          <div className="hidden sm:grid sm:grid-cols-[1.5fr_1fr_auto_auto] gap-3 px-4 py-2.5 border-b text-[11px] font-medium text-gray-500 uppercase tracking-wide">
             <span>Nom</span>
             <span>Contact</span>
             <span>Ville</span>
