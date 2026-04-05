@@ -1,11 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 interface Props {
   accent: string;
   siret: string;
   token: string;
+}
+
+interface CompanyResult {
+  siret: string;
+  siren: string;
+  companyName: string;
+  address: string;
+  postalCode: string;
+  city: string;
+  vatNumber: string;
+  isActive: boolean;
+}
+
+function computeVat(siren: string): string {
+  const s = parseInt(siren, 10);
+  if (isNaN(s)) return "";
+  const key = ((12 + 3 * (s % 97)) % 97).toString().padStart(2, "0");
+  return `FR${key}${siren}`;
 }
 
 export default function EmbedClientForm({ accent, siret, token }: Props) {
@@ -23,6 +41,50 @@ export default function EmbedClientForm({ accent, siret, token }: Props) {
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
+
+  // Company search
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<CompanyResult[]>([]);
+  const [searching, setSearching] = useState(false);
+  const [selectedCompany, setSelectedCompany] = useState(false);
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+
+  useEffect(() => {
+    if (type !== "company" || searchQuery.length < 2 || selectedCompany) { setSearchResults([]); return; }
+    setSearching(true);
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(async () => {
+      try {
+        const res = await fetch(`https://recherche-entreprises.api.gouv.fr/search?q=${encodeURIComponent(searchQuery.trim())}&per_page=5`);
+        if (!res.ok) { setSearchResults([]); return; }
+        const data = await res.json();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        setSearchResults((data.results || []).map((r: any) => ({
+          siret: r.siege?.siret || "",
+          siren: r.siren || "",
+          companyName: r.nom_complet || "",
+          address: [r.siege?.numero_voie, r.siege?.type_voie, r.siege?.libelle_voie].filter(Boolean).join(" ") || "",
+          postalCode: r.siege?.code_postal || "",
+          city: r.siege?.libelle_commune || "",
+          vatNumber: computeVat(r.siren || ""),
+          isActive: r.etat_administratif === "A",
+        })));
+      } catch { setSearchResults([]); }
+      finally { setSearching(false); }
+    }, 400);
+    return () => clearTimeout(debounceRef.current);
+  }, [searchQuery, type, selectedCompany]);
+
+  function selectCompany(c: CompanyResult) {
+    setCompanyName(c.companyName);
+    setClientSiret(c.siret);
+    setAddress(c.address);
+    setPostalCode(c.postalCode);
+    setCity(c.city);
+    setSearchQuery(c.companyName);
+    setSearchResults([]);
+    setSelectedCompany(true);
+  }
 
   async function handleSubmit() {
     setError("");
@@ -83,10 +145,7 @@ export default function EmbedClientForm({ accent, siret, token }: Props) {
         <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Type</label>
         <div className="flex rounded-xl border border-gray-200 overflow-hidden">
           {(["company", "individual"] as const).map((t) => (
-            <button
-              key={t}
-              type="button"
-              onClick={() => setType(t)}
+            <button key={t} type="button" onClick={() => { setType(t); setSelectedCompany(false); setSearchQuery(""); setSearchResults([]); }}
               className="flex-1 h-11 text-sm font-medium transition-all"
               style={type === t ? { background: accent, color: "#fff" } : { background: "#fff", color: "#6b7280" }}
             >
@@ -106,13 +165,62 @@ export default function EmbedClientForm({ accent, siret, token }: Props) {
         </div>
       </section>
 
-      {/* Identité */}
+      {/* Company search or manual entry */}
       <section className="mb-5 space-y-3">
         <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide">Identité</label>
         {type === "company" ? (
           <>
-            <input className="w-full h-11 rounded-xl border border-gray-200 px-3 text-sm focus:outline-none focus:ring-2" style={{ "--tw-ring-color": accent } as React.CSSProperties} placeholder="Raison sociale *" value={companyName} onChange={(e) => setCompanyName(e.target.value)} />
-            <input className="w-full h-11 rounded-xl border border-gray-200 px-3 text-sm font-mono focus:outline-none focus:ring-2" style={{ "--tw-ring-color": accent } as React.CSSProperties} placeholder="SIRET (14 chiffres)" maxLength={14} value={clientSiret} onChange={(e) => setClientSiret(e.target.value.replace(/\D/g, ""))} />
+            {/* Search input */}
+            <div className="relative">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              </div>
+              <input
+                className="w-full h-11 rounded-xl border border-gray-200 pl-9 pr-3 text-sm focus:outline-none focus:ring-2"
+                style={{ "--tw-ring-color": accent } as React.CSSProperties}
+                placeholder="Rechercher par nom ou SIRET..."
+                value={searchQuery || companyName}
+                onChange={(e) => { setSearchQuery(e.target.value); setCompanyName(e.target.value); setSelectedCompany(false); }}
+              />
+              {searching && <div className="absolute right-3 top-1/2 -translate-y-1/2"><div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" /></div>}
+            </div>
+
+            {/* Search results */}
+            {searchResults.length > 0 && (
+              <div className="rounded-lg border border-gray-200 divide-y divide-gray-100 max-h-48 overflow-y-auto">
+                {searchResults.map((r) => (
+                  <button key={r.siret} type="button" onClick={() => selectCompany(r)}
+                    className="w-full text-left px-3 py-2.5 hover:bg-gray-50 transition-colors flex items-center justify-between gap-2"
+                  >
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">{r.companyName}</p>
+                      <p className="text-xs text-gray-500">{r.postalCode} {r.city}</p>
+                    </div>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <span className="text-[10px] font-mono text-gray-400">{r.siret}</span>
+                      <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${r.isActive ? "bg-green-50 text-green-700" : "bg-red-50 text-red-600"}`}>
+                        {r.isActive ? "Active" : "Fermée"}
+                      </span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Confirmed company banner */}
+            {selectedCompany && (
+              <div className="rounded-lg bg-green-50 border border-green-200 px-3 py-2">
+                <div className="flex items-center gap-1.5">
+                  <svg width="14" height="14" fill="none" stroke="#16a34a" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+                  <span className="text-xs font-medium text-green-700">Entreprise trouvée — SIRET {clientSiret}</span>
+                </div>
+              </div>
+            )}
+
+            {/* SIRET field (if manual) */}
+            {!selectedCompany && (
+              <input className="w-full h-11 rounded-xl border border-gray-200 px-3 text-sm font-mono focus:outline-none focus:ring-2" style={{ "--tw-ring-color": accent } as React.CSSProperties} placeholder="SIRET (14 chiffres)" maxLength={14} value={clientSiret} onChange={(e) => setClientSiret(e.target.value.replace(/\D/g, ""))} />
+            )}
           </>
         ) : (
           <div className="grid grid-cols-2 gap-3">
@@ -147,9 +255,7 @@ export default function EmbedClientForm({ accent, siret, token }: Props) {
         <textarea className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2" style={{ "--tw-ring-color": accent } as React.CSSProperties} rows={2} placeholder="Notes internes (optionnel)" value={notes} onChange={(e) => setNotes(e.target.value)} />
       </section>
 
-      <button
-        onClick={handleSubmit}
-        disabled={saving}
+      <button onClick={handleSubmit} disabled={saving}
         className="w-full h-12 rounded-xl text-white text-sm font-semibold disabled:opacity-50 transition-opacity hover:opacity-90"
         style={{ background: accent }}
       >

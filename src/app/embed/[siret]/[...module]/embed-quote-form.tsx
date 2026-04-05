@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import EmbedCompanySearch from "./embed-company-search";
 
 interface Line {
   id: string;
@@ -69,10 +70,6 @@ export default function EmbedQuoteForm({ accent, siret, token, clients: initialC
 
   // Inline client creation
   const [showNewClient, setShowNewClient] = useState(false);
-  const [newClientName, setNewClientName] = useState("");
-  const [newClientSiret, setNewClientSiret] = useState("");
-  const [newClientEmail, setNewClientEmail] = useState("");
-  const [creatingClient, setCreatingClient] = useState(false);
 
   const totals = useMemo(() => {
     let totalHT = 0, totalTVA = 0;
@@ -84,27 +81,10 @@ export default function EmbedQuoteForm({ accent, siret, token, clients: initialC
     setLines((prev) => prev.map((l) => (l.id === id ? { ...l, [field]: value } : l)));
   }
 
-  async function createClientInline() {
-    if (!newClientName.trim()) return;
-    setCreatingClient(true);
-    try {
-      const res = await fetch("/api/v1/embed/clients", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-embed-token": token },
-        body: JSON.stringify({ type: "company", companyName: newClientName, siret: newClientSiret || undefined, email: newClientEmail || undefined }),
-      });
-      const data = await res.json();
-      if (!data.success) throw new Error(data.error);
-      const c = data.data.client;
-      setClients((prev) => [...prev, c]);
-      setClientId(c.id);
-      setShowNewClient(false);
-      setNewClientName(""); setNewClientSiret(""); setNewClientEmail("");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur création client");
-    } finally {
-      setCreatingClient(false);
-    }
+  function handleClientCreated(client: { id: string; companyName: string | null; firstName: string | null; lastName: string | null }) {
+    setClients((prev) => [...prev, client]);
+    setClientId(client.id);
+    setShowNewClient(false);
   }
 
   async function handleSubmit(finalize: boolean) {
@@ -175,20 +155,7 @@ export default function EmbedQuoteForm({ accent, siret, token, clients: initialC
             </button>
           </div>
         ) : (
-          <div className="rounded-xl border border-gray-200 bg-gray-50/50 p-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-semibold text-gray-700">Nouveau client</span>
-              <button type="button" onClick={() => setShowNewClient(false)} className="text-xs text-gray-400 hover:text-gray-600">Annuler</button>
-            </div>
-            <input className="w-full h-10 rounded-lg border border-gray-200 px-3 text-sm focus:outline-none focus:ring-2" style={{ "--tw-ring-color": accent } as React.CSSProperties} placeholder="Raison sociale *" value={newClientName} onChange={(e) => setNewClientName(e.target.value)} />
-            <div className="grid grid-cols-2 gap-2">
-              <input className="h-10 rounded-lg border border-gray-200 px-3 text-sm font-mono focus:outline-none focus:ring-2" style={{ "--tw-ring-color": accent } as React.CSSProperties} placeholder="SIRET" maxLength={14} value={newClientSiret} onChange={(e) => setNewClientSiret(e.target.value.replace(/\D/g, ""))} />
-              <input className="h-10 rounded-lg border border-gray-200 px-3 text-sm focus:outline-none focus:ring-2" style={{ "--tw-ring-color": accent } as React.CSSProperties} placeholder="Email" type="email" value={newClientEmail} onChange={(e) => setNewClientEmail(e.target.value)} />
-            </div>
-            <button type="button" onClick={createClientInline} disabled={creatingClient || !newClientName.trim()} className="h-9 px-4 rounded-lg text-sm font-medium text-white disabled:opacity-50 hover:opacity-90 transition-opacity" style={{ background: accent }}>
-              {creatingClient ? "Création..." : "Ajouter"}
-            </button>
-          </div>
+          <EmbedCompanySearch accent={accent} token={token} onClientCreated={handleClientCreated} onCancel={() => setShowNewClient(false)} />
         )}
       </section>
 
