@@ -113,6 +113,25 @@
 .stagger-5 { animation-delay: 0.25s; }
 .stagger-6 { animation-delay: 0.3s; }
 
+/* Scrollbar hide utility for tabs */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* PWA safe areas */
+.safe-top { padding-top: env(safe-area-inset-top); }
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+
+/* Touch targets */
+@media (pointer: coarse) {
+  input, select, button, a { min-height: 44px; }
+  input[type="date"] { min-height: 44px; }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

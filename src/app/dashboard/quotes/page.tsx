@@ -121,7 +121,7 @@ export default function QuotesPage() {
       {/* Tabs with counters */}
       <div className="space-y-4 animate-fade-in-up stagger-1">
         <Tabs value={status} onValueChange={(v) => { if (v) { setStatus(v); setPage(1); } }}>
-          <TabsList className="w-full justify-start overflow-x-auto">
+          <TabsList className="w-full justify-start overflow-x-auto scrollbar-hide">
             {STATUS_TABS.map((tab) => (
               <TabsTrigger key={tab.value} value={tab.value} className="text-xs sm:text-sm gap-1.5">
                 {tab.label}

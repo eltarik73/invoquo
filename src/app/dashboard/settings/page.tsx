@@ -471,7 +471,7 @@ export default function SettingsPage() {
       </div>
 
       <Tabs value={activeTab} onValueChange={(v) => v && setActiveTab(v)} className="animate-fade-in-up stagger-1">
-        <TabsList className="w-full justify-start overflow-x-auto">
+        <TabsList className="w-full justify-start overflow-x-auto scrollbar-hide">
           {SETTINGS_TABS.map((tab) => <TabsTrigger key={tab.value} value={tab.value} className="text-xs sm:text-sm">{tab.label}</TabsTrigger>)}
         </TabsList>
       </Tabs>

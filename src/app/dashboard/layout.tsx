@@ -199,7 +199,7 @@ export default function DashboardLayout({
 
       {/* Mobile sidebar */}
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-        <div className="lg:hidden fixed top-0 left-0 right-0 z-30 bg-white border-b border-border px-4 py-3 flex items-center justify-between">
+        <div className="lg:hidden fixed top-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-sm border-b border-border px-4 py-3 flex items-center justify-between safe-top">
           <Link href="/" className="text-xl font-bold text-primary">
             Invoquo
           </Link>

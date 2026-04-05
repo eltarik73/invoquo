@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { DM_Sans, DM_Mono } from "next/font/google";
 import "./globals.css";
+import { ServiceWorkerRegister } from "@/components/service-worker-register";
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
@@ -14,11 +15,28 @@ const dmMono = DM_Mono({
   weight: ["400", "500"],
 });
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
+  themeColor: "#7c3aed",
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://invoquo.vercel.app"),
   title: {
     default: "Invoquo — Facturation Electronique Conforme 2026 | Plateforme Agreee",
     template: "%s | Invoquo — Facturation Electronique",
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Invoquo",
+  },
+  formatDetection: {
+    telephone: false,
   },
   description:
     "Logiciel de facturation electronique connecte Plateforme Agreee DGFiP. Recevez et emettez vos factures conformes sept. 2026. TPE, artisans, auto-entrepreneurs. 1 mois gratuit.",
@@ -165,12 +183,19 @@ export default function RootLayout({
       className={`${dmSans.variable} ${dmMono.variable} h-full antialiased`}
     >
       <head>
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <meta name="mobile-web-app-capable" content="yes" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <ServiceWorkerRegister />
+        {children}
+      </body>
     </html>
   );
 }
