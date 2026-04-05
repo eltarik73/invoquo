@@ -28,7 +28,6 @@ export default function EmbedClientForm({ accent, siret, token }: Props) {
     setError("");
     if (type === "company" && !companyName.trim()) { setError("La raison sociale est obligatoire"); return; }
     if (type === "individual" && !firstName.trim() && !lastName.trim()) { setError("Le nom ou prénom est obligatoire"); return; }
-
     setSaving(true);
     try {
       const res = await fetch("/api/v1/embed/clients", {
@@ -43,10 +42,10 @@ export default function EmbedClientForm({ accent, siret, token }: Props) {
         }),
       });
       const data = await res.json();
-      if (!data.success) throw new Error(data.error || "Erreur");
+      if (!data.success) throw new Error(data.error);
       setSuccess(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur lors de la création");
+      setError(err instanceof Error ? err.message : "Erreur");
     } finally {
       setSaving(false);
     }
@@ -54,128 +53,108 @@ export default function EmbedClientForm({ accent, siret, token }: Props) {
 
   if (success) {
     return (
-      <div className="text-center py-12">
-        <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: `${accent}15` }}>
-          <svg className="w-7 h-7" style={{ color: accent }} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-          </svg>
+      <div className="flex flex-col items-center justify-center py-16">
+        <div className="w-14 h-14 rounded-full flex items-center justify-center mb-4" style={{ background: `${accent}18` }}>
+          <svg width="28" height="28" fill="none" stroke={accent} strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
         </div>
-        <p className="font-semibold text-gray-900 mb-1">Client créé avec succès</p>
-        <a href={`/embed/${siret}/clients?token=${token}`} className="text-sm font-medium mt-3 inline-block" style={{ color: accent }}>
-          ← Retour aux clients
-        </a>
+        <p className="text-base font-semibold text-gray-900 mb-1">Client créé</p>
+        <p className="text-sm text-gray-500 mb-5">Le client a été ajouté avec succès</p>
+        <a href={`/embed/${siret}/clients?token=${token}`} className="text-sm font-medium hover:underline" style={{ color: accent }}>Retour aux clients</a>
       </div>
     );
   }
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <h1 className="text-lg font-semibold text-gray-900">Nouveau client</h1>
-          <p className="text-xs text-gray-500 mt-0.5">Ajoutez les informations du client</p>
-        </div>
-        <a href={`/embed/${siret}/clients?token=${token}`} className="text-sm" style={{ color: accent }}>← Retour</a>
+    <div className="max-w-lg mx-auto">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-xl font-bold text-gray-900">Nouveau client</h1>
+        <a href={`/embed/${siret}/clients?token=${token}`} className="text-sm text-gray-400 hover:text-gray-600 transition-colors">Annuler</a>
       </div>
 
-      {error && <div className="text-sm text-red-600 bg-red-50 px-4 py-3 rounded-lg mb-4">{error}</div>}
-
-      <div className="space-y-4 max-w-2xl">
-        {/* Type toggle */}
-        <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-3">
-          <p className="text-sm font-semibold text-gray-700">Type de client</p>
-          <div className="flex gap-2">
-            {(["company", "individual"] as const).map((t) => (
-              <button
-                key={t}
-                onClick={() => setType(t)}
-                className="flex-1 py-2 rounded-lg text-sm font-medium border transition-colors"
-                style={type === t ? { backgroundColor: accent, color: "#fff", borderColor: accent } : { borderColor: "#d1d5db" }}
-              >
-                {t === "company" ? "Entreprise" : "Particulier"}
-              </button>
-            ))}
-          </div>
+      {error && (
+        <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-red-50 text-red-700 text-sm mb-5">
+          <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+          {error}
         </div>
+      )}
 
-        {/* Identity */}
-        <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-3">
-          <p className="text-sm font-semibold text-gray-700">Identité</p>
-          {type === "company" ? (
-            <>
-              <div className="space-y-1">
-                <label className="text-xs font-medium text-gray-600">Raison sociale *</label>
-                <input className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" placeholder="Nom de l'entreprise" value={companyName} onChange={(e) => setCompanyName(e.target.value)} />
-              </div>
-              <div className="space-y-1">
-                <label className="text-xs font-medium text-gray-600">SIRET *</label>
-                <input className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-mono" placeholder="14 chiffres" maxLength={14} value={clientSiret} onChange={(e) => setClientSiret(e.target.value.replace(/\D/g, ""))} />
-              </div>
-            </>
-          ) : (
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <label className="text-xs font-medium text-gray-600">Prénom</label>
-                <input className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
-              </div>
-              <div className="space-y-1">
-                <label className="text-xs font-medium text-gray-600">Nom *</label>
-                <input className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" value={lastName} onChange={(e) => setLastName(e.target.value)} />
-              </div>
-            </div>
-          )}
+      {/* Type toggle */}
+      <section className="mb-5">
+        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Type</label>
+        <div className="flex rounded-xl border border-gray-200 overflow-hidden">
+          {(["company", "individual"] as const).map((t) => (
+            <button
+              key={t}
+              type="button"
+              onClick={() => setType(t)}
+              className="flex-1 h-11 text-sm font-medium transition-all"
+              style={type === t ? { background: accent, color: "#fff" } : { background: "#fff", color: "#6b7280" }}
+            >
+              {t === "company" ? (
+                <span className="flex items-center justify-center gap-1.5">
+                  <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0H5m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5h4v5m-4 0h4"/></svg>
+                  Entreprise
+                </span>
+              ) : (
+                <span className="flex items-center justify-center gap-1.5">
+                  <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2m8-10a4 4 0 100-8 4 4 0 000 8"/></svg>
+                  Particulier
+                </span>
+              )}
+            </button>
+          ))}
         </div>
+      </section>
 
-        {/* Contact */}
-        <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-3">
-          <p className="text-sm font-semibold text-gray-700">Contact</p>
+      {/* Identité */}
+      <section className="mb-5 space-y-3">
+        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide">Identité</label>
+        {type === "company" ? (
+          <>
+            <input className="w-full h-11 rounded-xl border border-gray-200 px-3 text-sm focus:outline-none focus:ring-2" style={{ "--tw-ring-color": accent } as React.CSSProperties} placeholder="Raison sociale *" value={companyName} onChange={(e) => setCompanyName(e.target.value)} />
+            <input className="w-full h-11 rounded-xl border border-gray-200 px-3 text-sm font-mono focus:outline-none focus:ring-2" style={{ "--tw-ring-color": accent } as React.CSSProperties} placeholder="SIRET (14 chiffres)" maxLength={14} value={clientSiret} onChange={(e) => setClientSiret(e.target.value.replace(/\D/g, ""))} />
+          </>
+        ) : (
           <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1">
-              <label className="text-xs font-medium text-gray-600">Email</label>
-              <input type="email" className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" placeholder="email@exemple.fr" value={email} onChange={(e) => setEmail(e.target.value)} />
-            </div>
-            <div className="space-y-1">
-              <label className="text-xs font-medium text-gray-600">Téléphone</label>
-              <input className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" placeholder="06 00 00 00 00" value={phone} onChange={(e) => setPhone(e.target.value)} />
-            </div>
+            <input className="h-11 rounded-xl border border-gray-200 px-3 text-sm focus:outline-none focus:ring-2" style={{ "--tw-ring-color": accent } as React.CSSProperties} placeholder="Prénom" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+            <input className="h-11 rounded-xl border border-gray-200 px-3 text-sm focus:outline-none focus:ring-2" style={{ "--tw-ring-color": accent } as React.CSSProperties} placeholder="Nom *" value={lastName} onChange={(e) => setLastName(e.target.value)} />
           </div>
-        </div>
+        )}
+      </section>
 
-        {/* Address */}
-        <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-3">
-          <p className="text-sm font-semibold text-gray-700">Adresse</p>
-          <div className="space-y-1">
-            <label className="text-xs font-medium text-gray-600">Adresse</label>
-            <input className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" placeholder="Rue, numéro" value={address} onChange={(e) => setAddress(e.target.value)} />
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1">
-              <label className="text-xs font-medium text-gray-600">Code postal</label>
-              <input className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" placeholder="73000" maxLength={5} value={postalCode} onChange={(e) => setPostalCode(e.target.value)} />
-            </div>
-            <div className="space-y-1">
-              <label className="text-xs font-medium text-gray-600">Ville</label>
-              <input className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" placeholder="Chambéry" value={city} onChange={(e) => setCity(e.target.value)} />
-            </div>
-          </div>
+      {/* Contact */}
+      <section className="mb-5 space-y-3">
+        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide">Contact</label>
+        <div className="grid grid-cols-2 gap-3">
+          <input type="email" className="h-11 rounded-xl border border-gray-200 px-3 text-sm focus:outline-none focus:ring-2" style={{ "--tw-ring-color": accent } as React.CSSProperties} placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <input className="h-11 rounded-xl border border-gray-200 px-3 text-sm focus:outline-none focus:ring-2" style={{ "--tw-ring-color": accent } as React.CSSProperties} placeholder="Téléphone" value={phone} onChange={(e) => setPhone(e.target.value)} />
         </div>
+      </section>
 
-        {/* Notes */}
-        <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-2">
-          <p className="text-sm font-semibold text-gray-700">Notes</p>
-          <textarea className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" rows={2} placeholder="Notes internes (optionnel)" value={notes} onChange={(e) => setNotes(e.target.value)} />
+      {/* Adresse */}
+      <section className="mb-5 space-y-3">
+        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide">Adresse</label>
+        <input className="w-full h-11 rounded-xl border border-gray-200 px-3 text-sm focus:outline-none focus:ring-2" style={{ "--tw-ring-color": accent } as React.CSSProperties} placeholder="Rue, numéro" value={address} onChange={(e) => setAddress(e.target.value)} />
+        <div className="grid grid-cols-2 gap-3">
+          <input className="h-11 rounded-xl border border-gray-200 px-3 text-sm focus:outline-none focus:ring-2" style={{ "--tw-ring-color": accent } as React.CSSProperties} placeholder="Code postal" maxLength={5} value={postalCode} onChange={(e) => setPostalCode(e.target.value)} />
+          <input className="h-11 rounded-xl border border-gray-200 px-3 text-sm focus:outline-none focus:ring-2" style={{ "--tw-ring-color": accent } as React.CSSProperties} placeholder="Ville" value={city} onChange={(e) => setCity(e.target.value)} />
         </div>
+      </section>
 
-        {/* Submit */}
-        <button
-          onClick={handleSubmit}
-          disabled={saving}
-          className="w-full py-2.5 rounded-lg text-white text-sm font-medium disabled:opacity-50"
-          style={{ backgroundColor: accent }}
-        >
-          {saving ? "Création..." : "Créer le client"}
-        </button>
-      </div>
+      {/* Notes */}
+      <section className="mb-6">
+        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Notes</label>
+        <textarea className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2" style={{ "--tw-ring-color": accent } as React.CSSProperties} rows={2} placeholder="Notes internes (optionnel)" value={notes} onChange={(e) => setNotes(e.target.value)} />
+      </section>
+
+      <button
+        onClick={handleSubmit}
+        disabled={saving}
+        className="w-full h-12 rounded-xl text-white text-sm font-semibold disabled:opacity-50 transition-opacity hover:opacity-90"
+        style={{ background: accent }}
+      >
+        {saving ? "Création..." : "Créer le client"}
+      </button>
     </div>
   );
 }
