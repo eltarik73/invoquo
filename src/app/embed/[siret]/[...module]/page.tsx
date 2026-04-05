@@ -2,9 +2,10 @@ import { verifyEmbedToken } from "@/lib/embed-auth";
 import { prisma } from "@/lib/prisma";
 import type { Decimal } from "@prisma/client/runtime/client";
 import EmbedMessenger from "../embed-messenger";
+import EmbedInvoiceForm from "./embed-invoice-form";
 
 interface Props {
-  params: Promise<{ siret: string; module: string }>;
+  params: Promise<{ siret: string; module: string[] }>;
   searchParams: Promise<{ token?: string; accent?: string }>;
 }
 
@@ -53,8 +54,10 @@ type ClientRow = {
 };
 
 export default async function EmbedModulePage({ params, searchParams }: Props) {
-  const { siret, module } = await params;
+  const { siret, module: moduleSegments } = await params;
   const { token, accent } = await searchParams;
+  const module = moduleSegments[0]; // e.g. "invoices"
+  const action = moduleSegments[1]; // e.g. "new" or undefined
 
   if (!token) return <EmbedError message="Token manquant" />;
 
@@ -132,6 +135,22 @@ export default async function EmbedModulePage({ params, searchParams }: Props) {
       deltaCaPct: prevCa > 0 ? Math.round(((ca - prevCa) / prevCa) * 100) : 0,
       paConnected: tenant.paStatus === "connected",
     };
+  }
+
+  // Handle "new" sub-routes (invoices/new, quotes/new, clients/new)
+  if (action === "new" && module === "invoices") {
+    const formClients = await prisma.client.findMany({
+      where: { tenantId: tenant.id },
+      orderBy: { companyName: "asc" },
+      take: 200,
+      select: { id: true, companyName: true, firstName: true, lastName: true },
+    });
+    return (
+      <div style={{ "--accent": accentColor } as React.CSSProperties}>
+        <EmbedMessenger siret={siret} token={token} />
+        <EmbedInvoiceForm accent={accentColor} siret={siret} token={token} clients={formClients} />
+      </div>
+    );
   }
 
   // Fetch invoices for invoices module
