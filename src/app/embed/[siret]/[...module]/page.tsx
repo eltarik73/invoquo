@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import type { Decimal } from "@prisma/client/runtime/client";
 import EmbedMessenger from "../embed-messenger";
 import EmbedInvoiceForm from "./embed-invoice-form";
+import EmbedQuoteForm from "./embed-quote-form";
+import EmbedClientForm from "./embed-client-form";
 
 interface Props {
   params: Promise<{ siret: string; module: string[] }>;
@@ -138,19 +140,32 @@ export default async function EmbedModulePage({ params, searchParams }: Props) {
   }
 
   // Handle "new" sub-routes (invoices/new, quotes/new, clients/new)
-  if (action === "new" && module === "invoices") {
-    const formClients = await prisma.client.findMany({
-      where: { tenantId: tenant.id },
-      orderBy: { companyName: "asc" },
-      take: 200,
-      select: { id: true, companyName: true, firstName: true, lastName: true },
-    });
-    return (
-      <div style={{ "--accent": accentColor } as React.CSSProperties}>
-        <EmbedMessenger siret={siret} token={token} />
-        <EmbedInvoiceForm accent={accentColor} siret={siret} token={token} clients={formClients} />
-      </div>
-    );
+  if (action === "new") {
+    if (module === "invoices" || module === "quotes") {
+      const formClients = await prisma.client.findMany({
+        where: { tenantId: tenant.id },
+        orderBy: { companyName: "asc" },
+        take: 200,
+        select: { id: true, companyName: true, firstName: true, lastName: true },
+      });
+      return (
+        <div style={{ "--accent": accentColor } as React.CSSProperties}>
+          <EmbedMessenger siret={siret} token={token} />
+          {module === "invoices"
+            ? <EmbedInvoiceForm accent={accentColor} siret={siret} token={token} clients={formClients} />
+            : <EmbedQuoteForm accent={accentColor} siret={siret} token={token} clients={formClients} />
+          }
+        </div>
+      );
+    }
+    if (module === "clients") {
+      return (
+        <div style={{ "--accent": accentColor } as React.CSSProperties}>
+          <EmbedMessenger siret={siret} token={token} />
+          <EmbedClientForm accent={accentColor} siret={siret} token={token} />
+        </div>
+      );
+    }
   }
 
   // Fetch invoices for invoices module
