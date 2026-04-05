@@ -47,7 +47,7 @@ export default function EmbedClientForm({ accent, siret, token }: Props) {
   const [searchResults, setSearchResults] = useState<CompanyResult[]>([]);
   const [searching, setSearching] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState(false);
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => {
     if (type !== "company" || searchQuery.length < 2 || selectedCompany) { setSearchResults([]); return; }

@@ -40,7 +40,7 @@ export default function EmbedCompanySearch({ accent, token, onClientCreated, onC
   const [manualSiret, setManualSiret] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => {
     if (query.length < 2) { setResults([]); return; }
