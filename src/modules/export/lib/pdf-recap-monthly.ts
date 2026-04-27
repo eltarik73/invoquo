@@ -21,8 +21,22 @@ type QuoteRow = {
 };
 
 const num = (v: unknown): number => Number(v ?? 0);
-const fmtEur = (v: number): string => v.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " EUR";
-const fmtDate = (d: Date) => new Date(d).toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" });
+// fmtEur: format manuel pour eviter les caracteres "espace fine insecable" (0x202f)
+// que les fonts StandardFonts WinAnsi de pdf-lib ne savent pas encoder.
+const fmtEur = (v: number): string => {
+  const fixed = Math.abs(v).toFixed(2);
+  const [intPart, decPart] = fixed.split(".");
+  // Insertion d'espaces classiques (0x20) tous les 3 chiffres
+  const grouped = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  const sign = v < 0 ? "-" : "";
+  return `${sign}${grouped},${decPart} EUR`;
+};
+// fmtDate manuel jj/mm/aaaa pour eviter caracteres exotiques (eviter aussi 0x202f)
+const fmtDate = (d: Date | null | undefined) => {
+  if (!d) return "";
+  const dd = new Date(d);
+  return `${String(dd.getUTCDate()).padStart(2,"0")}/${String(dd.getUTCMonth()+1).padStart(2,"0")}/${dd.getUTCFullYear()}`;
+};
 const clientName = (c: InvoiceRow["client"] | QuoteRow["client"]) => c?.companyName || [c?.firstName, c?.lastName].filter(Boolean).join(" ") || "";
 const fmtType = (t: string) => t === "credit_note" ? "Avoir" : t === "deposit" ? "Acompte" : "Facture";
 const fmtStatus = (s: string) => ({
@@ -89,7 +103,10 @@ export async function buildMonthlyRecapPdf(opts: {
   };
 
   const drawFooter = () => {
-    page.drawText(`Document genere le ${new Date().toLocaleDateString("fr-FR")} a ${new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })} via Bativio + Invoquo`, {
+    const now = new Date();
+    const dStr = `${String(now.getUTCDate()).padStart(2,"0")}/${String(now.getUTCMonth()+1).padStart(2,"0")}/${now.getUTCFullYear()}`;
+    const tStr = `${String(now.getUTCHours()).padStart(2,"0")}:${String(now.getUTCMinutes()).padStart(2,"0")} UTC`;
+    page.drawText(`Document genere le ${dStr} a ${tStr} via Bativio + Invoquo`, {
       x: MARGIN_X, y: 25, size: 8, font: fontItalic, color: COLOR.pierre,
     });
   };
